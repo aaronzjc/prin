@@ -16,7 +16,7 @@ func RegisterStatic() {
 
 	r.StaticFile("/", path+"/public/index.html")
 
-	for _, v := range []string{"favicon.png"} {
+	for _, v := range []string{"favicon.ico"} {
 		r.StaticFile(v, path+"/public/"+v)
 	}
 
