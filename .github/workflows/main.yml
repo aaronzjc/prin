@@ -44,6 +44,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: aaronzjc/prin
           tag_with_ref: true
+          tags: latest
       - name: setup ktl
         uses: azure/setup-kubectl@v1
         id: install
