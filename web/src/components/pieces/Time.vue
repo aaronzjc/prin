@@ -78,7 +78,7 @@ export default {
         function fetchCurrentTime() {
             let dt = new Date();
             state.current.timestamp = Math.floor(dt.getTime() / 1000)
-            state.current.time = timestampToTime(dt.getTime())
+            state.current.time = timestampToTime(dt.getTime() / 1000)
         }
 
         function toTimestamp() {
