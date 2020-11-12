@@ -23,6 +23,11 @@
         </div>
     </div>
     <router-view></router-view>
+    <div class="columns" id="footer">
+        <div class="column copyright has-text-centered">
+            <p><a href="https://github.com/aaronzjc">@aaronzjc</a>开发，源码<a href="https://github.com/aaronzjc/prin">在此</a>，欢迎Star v0.1</p>
+        </div>
+    </div>
 </main>
 </template>
 
@@ -70,5 +75,9 @@ export default {
     .navbar-brand {
         margin-left: 0 !important;
     }
+}
+#footer {
+    margin-top: 100px;
+    background: none;
 }
 </style>

@@ -23,10 +23,13 @@ func Generate(c *gin.Context) {
 	var pic []byte
 	pic, err = qr.Encode(r.Content, qr.Medium, 512)
 	if err != nil {
-		logger.Error("qrcode encode failed !")
+		logger.Error("qrcode encode failed ! content = " + r.Content)
 		req.JSON(c, req.CodeError, "二维码生成失败", nil)
 		return
 	}
+
+	logger.Info("qrcode generate success ! content = " + r.Content)
+
 	data := base64.StdEncoding.EncodeToString(pic)
 
 	req.JSON(c, req.CodeSuccess, "success", map[string]string{

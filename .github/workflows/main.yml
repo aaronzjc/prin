@@ -1,0 +1,56 @@
+name: Main CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+
+jobs:
+  Build_and_Release:
+    name: Build & Release & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: setup nodejs
+        uses: actions/setup-node@v1
+      - name: restore node cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: build frontend
+        run: make vue
+      - name: setup go env
+        uses: actions/setup-go@v2
+      - name: restore Go mod cache
+        uses: actions/cache@v2
+        with:
+         path: ~/go/pkg/mod
+         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+         restore-keys: |
+           ${{ runner.os }}-go-
+      - name: build app dist
+        run: |
+          make prin
+      - name: release prin
+        uses: docker/build-push-action@v1.1.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: aaronzjc/prin
+          tag_with_ref: true
+      - name: setup ktl
+        uses: azure/setup-kubectl@v1
+        id: install
+      - name: deploy
+        run: |
+          cat << EOF > kube-config
+          ${{ secrets.KUBECONF }}
+          EOF
+          export KUBECONFIG=$(pwd)/kube-config
+          kubectl rollout restart -f deployments/k8s.yml -n k3s-apps

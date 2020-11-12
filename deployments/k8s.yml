@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prin
+  namespace: k3s-apps
+spec:
+  selector:
+    matchLabels:
+      app: prin
+  replicas: 2
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: prin
+    spec:
+      containers:
+      - name: prin
+        image: aaronzjc/prin:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8980
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
