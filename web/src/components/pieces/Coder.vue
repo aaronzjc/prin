@@ -1,11 +1,14 @@
 <template>
 <div class="columns" id="coder">
-    <div class="column sub-tabs">
+    <div class="column p-0">
+    <div class="columns">
+        <div class="column pt-0">
         <div class="tags">
             <span :class="[ 'tag', { 'is-dark' : idx == state.current } ]" v-for="(tag, idx) in tags" :key="idx" @click="switchTag(idx)">{{ tag.name }}</span>
         </div>
+        </div>
     </div>
-    <div class="column">
+    <div class="columns">
         <div class="column">
             <textarea class="textarea" v-model="state.input" placeholder="请输入原始内容"></textarea>
             <div class="buttons is-centered mt-4">
@@ -13,6 +16,7 @@
             </div>
             <textarea class="textarea" v-model="state.output" readonly placeholder="转换后的内容"></textarea>
         </div>
+    </div>
     </div>
 </div>
 </template>
@@ -99,9 +103,6 @@ export default {
 
 <style lang="scss">
 #coder {
-    .sub-tabs {
-        padding-top: 0;
-    }
     .tag {
         cursor: pointer;
     }
