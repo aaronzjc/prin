@@ -2,7 +2,7 @@
 <div class="columns" id="qrcode">
     <div class="column">
         <textarea class="textarea" v-model="state.content" placeholder="请输入内容"></textarea>
-        <div class="buttons is-centered">
+        <div class="buttons is-centered mt-4">
             <button class="button is-primary" @click="genCode">生成二维码</button>
         </div>
     </div>
@@ -33,7 +33,6 @@ export default {
                 return false;
             }
             let resp = await Post("/api/qrcode", {content: state.content})
-
             if (resp.data.code === 10000) {
                 state.img = "data:image/png;base64," + resp.data.data.qrcode;
             }
@@ -49,9 +48,6 @@ export default {
 
 <style lang="scss">
 #qrcode {
-    .buttons {
-        margin: 1rem 0;
-    }
     .img-box {
         border:2px dashed #096;
         width: 256px;

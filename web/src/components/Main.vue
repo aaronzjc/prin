@@ -12,9 +12,9 @@
         <div class="column">
             <div class="tabs">
                 <ul>
-                    <router-link v-for="(tab, idx) in state.tabs" v-bind="$attrs" :key="idx" :to="tab.link" custom v-slot="{ isActive, navigate }">
+                    <router-link v-for="(tab, idx) in state.tabs" v-bind="$attrs" :key="idx" :to="tab.name" custom v-slot="{ isActive, navigate }">
                     <li :class="isActive ? 'is-active' : '' " @click="navigate" role="link">
-                        <a href="#">{{ tab.name }}</a>
+                        <a href="#">{{ tab.title }}</a>
                     </li>
                     <slot />
                     </router-link>
@@ -32,22 +32,14 @@
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { reactive, readonly } from 'vue'
+import { mainRoutes } from '../router/router'
 
 export default {
     name: "Main",
     setup() {
         const state = reactive({
-            tabs: [
-                {
-                    "name": "二维码",
-                    "link": "qrcode"
-                },
-                {
-                    "name": "时间",
-                    "link": "time"
-                }
-            ],
+            tabs: readonly(mainRoutes)
         })
 
         return {

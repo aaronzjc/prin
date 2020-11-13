@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"prin/internal/app"
+	"prin/internal/routes/coder"
 	"prin/internal/routes/qrcode"
 )
 
@@ -40,6 +41,7 @@ func RegisterRoutes() {
 	api := r.Group("/api")
 	{
 		api.POST("/qrcode", qrcode.Generate)
+		api.POST("/coder", coder.Decode)
 	}
 
 	RegisterStatic()
