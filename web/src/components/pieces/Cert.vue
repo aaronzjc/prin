@@ -20,8 +20,8 @@
         <div class="columns">
             <div class="column">
             <div class="buttons">
-                <a href="http://127.0.0.1:8980/assets/ca.pem" target="_blank" class="button is-light is-small">查看根证书</a>
-                <a href="http://127.0.0.1:8980/assets/ca.key" target="_blank" class="button is-light is-small">查看根证书私钥</a>
+                <a href="/assets/ca.pem" target="_blank" class="button is-light is-small">查看根证书</a>
+                <a href="/assets/ca.key" target="_blank" class="button is-light is-small">查看根证书私钥</a>
             </div>
             </div>
         </div>
