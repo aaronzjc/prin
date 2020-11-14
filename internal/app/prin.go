@@ -24,8 +24,11 @@ func init() {
 	}
 
 	// 初始化环境配置
-	pwd, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-	RootPath = filepath.Dir(pwd)
+	RootPath = strings.ToLower(os.Getenv("APP_PATH"))
+	if RootPath == "" {
+		pwd, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+		RootPath = filepath.Dir(pwd)
+	}
 
 	App = &Instance{
 		Gin: gin.New(),
