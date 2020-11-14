@@ -13,13 +13,10 @@ func RegisterStatic() {
 	path := app.RootPath
 
 	r.StaticFile("/", path+"/public/index.html")
+	r.StaticFile("/favicon.ico", path+"/public/favicon.ico")
 
-	for _, v := range []string{"/public/favicon.ico", "/assets/ca.pem", "/assets/ca.key"} {
-		r.StaticFile(v, path+v)
-	}
-
-	for _, v := range []string{"/public/static"} {
-		r.Static("/"+v, path+v)
+	for k, v := range map[string]string{"static": "/public/static", "assets": "/assets"} {
+		r.Static("/"+k, path+v)
 	}
 }
 
