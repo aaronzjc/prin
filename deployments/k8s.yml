@@ -34,8 +34,8 @@ spec:
             - containerPort: 8980
           resources:
             limits:
-              cpu: 100m
-              memory: 50Mi
+              cpu: 200m
+              memory: 200Mi
         - name: fluent-bit
           image: grafana/fluent-bit-plugin-loki:latest
           volumeMounts:
