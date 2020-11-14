@@ -1,14 +1,18 @@
 package cert
 
 import (
+	"io/ioutil"
+	"prin/internal/app"
 	"prin/internal/util/logger"
 	"prin/internal/util/req"
+	"prin/internal/util/tool"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Form struct {
-	Content string `json:"content"`
+	Domains string `json:"domains"`
 }
 
 func Generate(c *gin.Context) {
@@ -19,10 +23,40 @@ func Generate(c *gin.Context) {
 		return
 	}
 
-	logger.Info("coder exec success ! content = " + r.Input)
+	if len(r.Domains) == 0 {
+		req.JSON(c, req.CodeError, "域名为空", nil)
+		return
+	}
+
+	domains := strings.Split(r.Domains, ",")
+
+	caCertData, _ := ioutil.ReadFile(app.RootPath + "/assets/ca.pem")
+	caKeyData, _ := ioutil.ReadFile(app.RootPath + "/assets/ca.key")
+	caCerts, err := tool.ParseCertsPEM(caCertData)
+	if err != nil {
+		req.JSON(c, req.CodeError, err.Error(), nil)
+		return
+	}
+	if len(caCerts) == 0 {
+		req.JSON(c, req.CodeError, "无效的根证书", nil)
+		return
+	}
+	caKey, err := tool.ParsePrivKey(caKeyData)
+	if err != nil {
+		req.JSON(c, req.CodeError, err.Error(), nil)
+		return
+	}
+	dstKey, dstCert, err := tool.GenCertAndPrivkey(caKey, caCerts[0], domains)
+	if err != nil {
+		req.JSON(c, req.CodeError, err.Error(), nil)
+		return
+	}
+
+	logger.Info("generate certificate success ! content = " + r.Domains)
 
 	req.JSON(c, req.CodeSuccess, "success", map[string]string{
-		"output": output,
+		"cert": string(dstCert),
+		"key":  string(dstKey),
 	})
 	return
 }

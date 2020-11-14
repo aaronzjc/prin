@@ -14,13 +14,34 @@ spec:
       labels:
         app: prin
     spec:
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+        - name: fluent-bit-prin-conf
+          configMap:
+            name: fluent-bit-prin-config
+        - name: prin-log-dir
+          emptyDir: {}
       containers:
-      - name: prin
-        image: aaronzjc/prin:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8980
-        resources:
-          limits:
-            cpu: 100m
-            memory: 50Mi
+        - name: prin
+          image: aaronzjc/prin:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: prin-log-dir
+              mountPath: /var/log
+          ports:
+            - containerPort: 8980
+          resources:
+            limits:
+              cpu: 100m
+              memory: 50Mi
+        - name: fluent-bit
+          image: grafana/fluent-bit-plugin-loki:latest
+          volumeMounts:
+            - name: tz-config
+              mountPath: /etc/localtime
+            - name: prin-log-dir
+              mountPath: /var/log
+            - name: fluent-bit-prin-conf
+              mountPath: /fluent-bit/etc

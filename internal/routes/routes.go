@@ -2,27 +2,24 @@ package routes
 
 import (
 	"github.com/gin-contrib/cors"
-	"os"
-	"path/filepath"
 	"prin/internal/app"
+	"prin/internal/routes/cert"
 	"prin/internal/routes/coder"
 	"prin/internal/routes/qrcode"
 )
 
 func RegisterStatic() {
 	r := app.App.Gin
-
-	pwd, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-	path := filepath.Dir(pwd)
+	path := app.RootPath
 
 	r.StaticFile("/", path+"/public/index.html")
 
-	for _, v := range []string{"favicon.ico"} {
-		r.StaticFile(v, path+"/public/"+v)
+	for _, v := range []string{"/public/favicon.ico", "/assets/ca.pem", "/assets/ca.key"} {
+		r.StaticFile(v, path+v)
 	}
 
-	for _, v := range []string{"static"} {
-		r.Static("/"+v, path+"/public/"+v)
+	for _, v := range []string{"/public/static"} {
+		r.Static("/"+v, path+v)
 	}
 }
 
@@ -42,6 +39,7 @@ func RegisterRoutes() {
 	{
 		api.POST("/qrcode", qrcode.Generate)
 		api.POST("/coder", coder.Decode)
+		api.POST("/cert", cert.Generate)
 	}
 
 	RegisterStatic()
