@@ -1,9 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-import Qrcode from "../components/pieces/Qrcode"
-import Time from "../components/pieces/Time"
-import Coder from "../components/pieces/Coder"
-import Cert from "../components/pieces/Cert"
+const Qrcode = () => import("../components/pieces/Qrcode")
+const Time = () => import("../components/pieces/Time")
+const Coder = () => import("../components/pieces/Coder")
+const Cert = () => import("../components/pieces/Cert")
 
 const baseRoutes = [
     {
