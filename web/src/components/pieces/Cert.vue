@@ -7,7 +7,7 @@
                 <div class="message-body content is-small">
                     <p>使用方法: </p>
                     <ol type="1">
-                        <li>下载根证书，添加本地信任，不同系统方法不同</li>
+                        <li>下载根证书，添加本地信任，具体请Google搜索下浏览器怎么信任根证书</li>
                         <li>在下面生成你的域名证书和私有Key</li>
                         <li>使用生成的证书和私钥部署HTTPS即可</li>
                         <li>证书仅供开发测试环境使用，请谨慎使用</li>
