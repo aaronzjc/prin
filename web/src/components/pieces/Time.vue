@@ -1,7 +1,7 @@
 <template>
 <div class="columns" id="time">
     <div class="column">
-        <article class="message">
+        <article class="message is-dark">
             <div class="message-body">
                 当前时间 <span class="tag is-info is-light">{{ state.current.time }}</span>
                 时间戳 <span class="tag is-info is-light">{{ state.current.timestamp }}</span>

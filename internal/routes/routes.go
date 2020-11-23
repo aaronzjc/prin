@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"prin/internal/app"
 	"prin/internal/routes/cert"
 	"prin/internal/routes/coder"
@@ -18,6 +19,17 @@ func RegisterStatic() {
 	for k, v := range map[string]string{"static": "/public/static", "assets": "/assets"} {
 		r.Static("/"+k, path+v)
 	}
+
+	// 自动下载CA证书
+	r.GET("/ca.pem", func(c *gin.Context) {
+		fileName := "ca.pem"
+		target := path + "/assets/ca.pem"
+		c.Header("Content-Description", "File Transfer")
+		c.Header("Content-Transfer-Encoding", "binary")
+		c.Header("Content-Disposition", "attachment; filename="+fileName)
+		c.Header("Content-Type", "application/octet-stream")
+		c.File(target)
+	})
 }
 
 func RegisterRoutes() {
