@@ -1,9 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-const Qrcode = () => import("../components/pieces/Qrcode")
-const Time = () => import("../components/pieces/Time")
-const Coder = () => import("../components/pieces/Coder")
-const Cert = () => import("../components/pieces/Cert")
+const Qrcode = () => import("../components/Qrcode")
+const Time = () => import("../components/Time")
+const Coder = () => import("../components/Coder")
+const Cert = () => import("../components/Cert")
+const Iptable = () => import("../components/Iptable")
 
 const baseRoutes = [
     {
@@ -37,6 +38,12 @@ const mainRoutes = [
         title: "本地证书",
         component: Cert
     },
+    {
+        path: "/iptable",
+        name: "iptable",
+        title: "IPTable",
+        component: Iptable
+    }
 ];
 const router = createRouter({
     history: createWebHashHistory(),

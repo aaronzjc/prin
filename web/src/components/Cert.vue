@@ -53,7 +53,7 @@
 
 <script>
 import { reactive } from 'vue'
-import {Post} from "../../tools/http"
+import {Post} from "../tools/http"
 
 export default {
     name: "Cert",

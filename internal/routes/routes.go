@@ -6,6 +6,7 @@ import (
 	"prin/internal/app"
 	"prin/internal/routes/cert"
 	"prin/internal/routes/coder"
+	"prin/internal/routes/iptable"
 	"prin/internal/routes/qrcode"
 )
 
@@ -49,6 +50,7 @@ func RegisterRoutes() {
 		api.POST("/qrcode", qrcode.Generate)
 		api.POST("/coder", coder.Decode)
 		api.POST("/cert", cert.Generate)
+		api.POST("/iptable", iptable.Beauty)
 	}
 
 	RegisterStatic()

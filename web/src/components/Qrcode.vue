@@ -3,7 +3,7 @@
     <div class="column">
         <textarea class="textarea" v-model="state.content" placeholder="请输入内容"></textarea>
         <div class="buttons is-centered mt-4">
-            <button class="button is-primary" @click="genCode">生成二维码</button>
+            <button class="button is-info" @click="genCode">生成二维码</button>
         </div>
     </div>
     <div class="column">
@@ -17,7 +17,7 @@
 
 <script>
 import { reactive } from 'vue'
-import {Post} from "../../tools/http"
+import {Post} from "../tools/http"
 
 export default {
     name: "Qrcode",

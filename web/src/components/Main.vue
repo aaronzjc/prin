@@ -3,8 +3,8 @@
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="/">
-                <img alt="简单的小公举" src="../assets/logo.png" />
-                <p>一些简单的小公举</p>
+                <img alt="一些好用的小公举" src="../assets/logo.png" />
+                <p>一些好用的小公举</p>
             </a>
         </div>
     </nav>
@@ -25,7 +25,7 @@
     <router-view></router-view>
     <div class="columns" id="footer">
         <div class="column copyright has-text-centered">
-            <p><a href="https://github.com/aaronzjc">@aaronzjc</a>开发，源码<a href="https://github.com/aaronzjc/prin">在此</a>，欢迎Star v0.1</p>
+            <p><a href="https://github.com/aaronzjc">@aaronzjc</a>开发，源码<a href="https://github.com/aaronzjc/prin">在此</a>，欢迎Star v0.2</p>
         </div>
     </div>
 </main>
