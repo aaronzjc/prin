@@ -10,7 +10,7 @@
                         <li>登录服务器执行：iptables -t {{ tags[state.current] }} -L</li>
                         <li>粘贴输出的内容，然后点击美化</li>
                     </ol>
-                    <p>因为IPTable都是从默认的链开始匹配。所以，美化后的输出，根链为每个表的默认链，不会展示孤儿链。</p>
+                    <p>因为IPTable都是从默认的链开始匹配。所以，美化后的输出，根链为每个表的默认链，不会展示孤儿链。附<a target="_blank" href="https://thermalcircle.de/lib/exe/fetch.php?media=linux:nf-hooks-iptables1.png">Netfilter中数据包流图。</a></p>
                 </div>
                 </article>
             </div>
