@@ -73,10 +73,6 @@ export default {
             if (state.input == "") {
                 return
             }
-            if (state.current != 0) {
-                alert("暂时只支持NAT，其他链在适配中，敬请期待")
-                return
-            }
             state.loading = true
             state.tree.children = []
             let resp = await Post("/api/iptable", {

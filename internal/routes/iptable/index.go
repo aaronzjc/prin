@@ -129,6 +129,8 @@ func Beauty(c *gin.Context) {
 
 	tbDefine := map[string][]string{
 		"NAT": {"PREROUTING", "INPUT", "OUTPUT", "POSTROUTING"},
+		"FILTER": {"INPUT", "FORWARD", "OUTPUT"},
+		"MANGLE": {"PREROUTING", "INPUT", "FORWARD", "OUTPUT", "POSTROUTING"},
 	}
 	chains, ok := tbDefine[r.T]
 	if !ok {
