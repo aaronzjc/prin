@@ -63,7 +63,7 @@ export default {
                 children: []
             },
         })
-        const tags = readonly(["NAT", "FILTER", "MANGLE"])
+        const tags = readonly(["nat", "filter", "mangle"])
 
         function switchTag(idx) {
             state.current = idx;
