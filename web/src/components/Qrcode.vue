@@ -3,7 +3,7 @@
     <div class="column">
         <textarea class="textarea" v-model="state.content" placeholder="请输入内容"></textarea>
         <div class="buttons is-centered mt-4">
-            <button class="button is-info" @click="genCode">生成二维码</button>
+            <button :class="[ 'button', 'is-info', { 'is-loading' : state.loading } ]" @click="genCode">生成二维码</button>
         </div>
     </div>
     <div class="column">
@@ -23,6 +23,7 @@ export default {
     name: "Qrcode",
     setup() {
         const state = reactive({
+            loading: false,
             content: "",
             img: ""
         })
@@ -32,7 +33,9 @@ export default {
                 state.img = "";
                 return false;
             }
+            state.loading = true
             let resp = await Post("/api/qrcode", {content: state.content})
+            state.loading = false
             if (resp.data.code === 10000) {
                 state.img = "data:image/png;base64," + resp.data.data.qrcode;
             }
