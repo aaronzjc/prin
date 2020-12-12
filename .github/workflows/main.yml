@@ -54,4 +54,5 @@ jobs:
           ${{ secrets.KUBECONF }}
           EOF
           export KUBECONFIG=$(pwd)/kube-config
-          kubectl rollout restart -f deployments/k8s.yml -n k3s-apps
+          curl -o prin.yml https://raw.githubusercontent.com/aaronzjc/k3s/main/Deployment/prin.yml
+          kubectl rollout restart -f prin.yml -n k3s-apps
