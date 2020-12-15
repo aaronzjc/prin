@@ -5,6 +5,10 @@
         <div class="buttons is-centered mt-4">
             <button :class="[ 'button', 'is-info', { 'is-loading' : state.loading } ]" @click="genCode">生成二维码</button>
         </div>
+        <div class="history">
+            <div class="title is-size-6">历史记录</div>
+            <div class="item" v-for="(log, idx) in state.history" :key="idx" @click="setData(idx)"><span>{{ log }}</span><span class="tag is-warning refresh" @click.stop="removeHistory(idx)">删除</span></div>
+        </div>
     </div>
     <div class="column">
         <div class="img-box">
@@ -18,11 +22,13 @@
 <script>
 import { reactive } from 'vue'
 import {Post} from "../tools/http"
+import {add, get, remove} from "../tools/lru"
 
 export default {
     name: "Qrcode",
     setup() {
         const state = reactive({
+            history: get(),
             loading: false,
             content: "",
             img: ""
@@ -39,11 +45,23 @@ export default {
             if (resp.data.code === 10000) {
                 state.img = "data:image/png;base64," + resp.data.data.qrcode;
             }
+            state.history = add(state.content)
+        }
+
+        async function removeHistory(idx) {
+            state.history.splice(idx, 1)
+            remove(idx)
+        }
+
+        function setData(idx) {
+            state.content = state.history[idx]
         }
 
         return {
             state,
-            genCode
+            genCode,
+            removeHistory,
+            setData
         }
     }
 }
@@ -59,6 +77,21 @@ export default {
         margin: 0 auto;
         span {
             line-height: 256px;
+        }
+    }
+    .history {
+        .item {
+            &:hover {
+                cursor: pointer;
+            }
+            margin: 0 0 8px 0px;
+            padding: 4px;;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+
+            border: 1px dashed #096;
         }
     }
 }
