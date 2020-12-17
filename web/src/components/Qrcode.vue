@@ -7,7 +7,7 @@
         </div>
         <div class="history">
             <div class="title is-size-6">历史记录</div>
-            <div class="item" v-for="(log, idx) in state.history" :key="idx" @click="setData(idx)"><span>{{ log }}</span><span class="tag is-warning refresh" @click.stop="removeHistory(idx)">删除</span></div>
+            <div class="item" v-for="(log, idx) in state.history" :key="idx" @click="setData(idx)"><span class="data">{{ log }}</span><span class="tag is-warning refresh" @click.stop="removeHistory(idx)">删除</span></div>
         </div>
     </div>
     <div class="column">
@@ -92,6 +92,10 @@ export default {
             align-items: center;
 
             border: 1px dashed #096;
+
+            .data {
+                margin-right: 4px;
+            }
         }
     }
 }
