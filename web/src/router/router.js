@@ -5,6 +5,7 @@ const Time = () => import("../components/Time")
 const Coder = () => import("../components/Coder")
 const Cert = () => import("../components/Cert")
 const Iptable = () => import("../components/Iptable")
+const JsonToGo = () => import("../components/JsonToGo")
 
 const baseRoutes = [
     {
@@ -43,6 +44,12 @@ const mainRoutes = [
         name: "iptable",
         title: "IPTable",
         component: Iptable
+    },
+    {
+        path: "/jsontogo",
+        name: "jsontogo",
+        title: "JsonToGo",
+        component: JsonToGo
     }
 ];
 const router = createRouter({
