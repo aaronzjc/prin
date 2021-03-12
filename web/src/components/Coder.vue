@@ -34,45 +34,45 @@ export default {
             output: ""
         })
         const tags = readonly([
-            {
-                "name": "URLCoder",
-                "opts": [
-                    {
-                        "name": "URLEncode",
-                        "type": "urlencode"
-                    },
-                    {
-                        "name": "URLDecode",
-                        "type": "urldecode"
-                    },
-                ]
-            },
-            {
-                "name": "Unicode",
-                "opts": [
-                    {
-                        "name": "Unicode->中文",
-                        "type": "unicodedecode"
-                    },
-                    {
-                        "name": "中文->Unicode",
-                        "type": "unicodeencode"
-                    }
-                ]
-            },
-            {
-                "name": "Base64",
-                "opts": [
-                    {
-                        "name": "Base64Encode",
-                        "type": "base64encode"
-                    },
-                    {
-                        "name": "Base64Decode",
-                        "type": "base64decode"
-                    }
-                ]
-            }
+          {
+            "name": "Unicode",
+            "opts": [
+              {
+                "name": "Unicode->中文",
+                "type": "unicodedecode"
+              },
+              {
+                "name": "中文->Unicode",
+                "type": "unicodeencode"
+              }
+            ]
+          },
+          {
+              "name": "URLCoder",
+              "opts": [
+                  {
+                      "name": "URLEncode",
+                      "type": "urlencode"
+                  },
+                  {
+                      "name": "URLDecode",
+                      "type": "urldecode"
+                  },
+              ]
+          },
+          {
+              "name": "Base64",
+              "opts": [
+                  {
+                      "name": "Base64Encode",
+                      "type": "base64encode"
+                  },
+                  {
+                      "name": "Base64Decode",
+                      "type": "base64decode"
+                  }
+              ]
+          }
         ])
 
         async function Decode(type) {

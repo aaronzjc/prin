@@ -2,6 +2,13 @@
   <div class="columns" id="jsontogo">
     <div class="column p-0">
       <div class="columns">
+        <div class="column pt-0">
+          <div class="tags">
+            <span :class="[ 'tag', { 'is-dark' : idx == state.current } ]" v-for="(tag, idx) in tags" :key="idx" @click="switchTag(idx)">{{ tag.name }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="columns">
         <div class="column">
           <article class="message is-dark">
             <div class="message-body content is-small">
