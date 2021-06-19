@@ -6,6 +6,7 @@ const Coder = () => import("../components/Coder")
 const Cert = () => import("../components/Cert")
 const Iptable = () => import("../components/Iptable")
 const JsonToGo = () => import("../components/JsonToGo")
+const GoPlay = () => import("../components/GoPlay")
 
 const baseRoutes = [
     {
@@ -50,6 +51,12 @@ const mainRoutes = [
         name: "jsontogo",
         title: "JsonToGo",
         component: JsonToGo
+    },
+    {
+        path: "/goplay",
+        name: "goplay",
+        title: "GoPlay",
+        component: GoPlay
     }
 ];
 const router = createRouter({

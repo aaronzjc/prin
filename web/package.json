@@ -11,6 +11,7 @@
     "axios": "^0.21.0",
     "bulma": "^0.9.1",
     "core-js": "^3.6.5",
+    "qs": "^6.10.1",
     "vue": "^3.0.0",
     "vue-flatpickr-component": "^9.0.2",
     "vue-router": "^4.0.0-rc.2"
@@ -38,7 +39,9 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "no-mixed-spaces-and-tabs": "off"
+    }
   },
   "browserslist": [
     "> 1%",

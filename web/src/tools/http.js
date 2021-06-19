@@ -46,4 +46,22 @@ export function Post(url, data, headers) {
     return client(config);
 }
 
+export function PostOuterApi(host, url, data, headers) {
+    let config= {
+        method: 'post',
+        url: url,
+        params: {}
+    };
+    if (headers) {
+        config.headers = headers;
+    }
+    if (data) {
+        config.data = data;
+    }
+    return axios.create({
+        baseURL: host,
+        withCredentials: false
+    })(config)
+}
+
 export default client;
