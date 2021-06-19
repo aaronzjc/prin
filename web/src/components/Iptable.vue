@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="columns">
-            <div class="column pt-0">
+            <div class="column pt-0 pb-0">
                 <div class="tags">
                     <span :class="[ 'tag', { 'is-dark' : idx == state.current } ]" v-for="(tag, idx) in tags" :key="idx" @click="switchTag(idx)">{{ tag }}</span>
                 </div>
