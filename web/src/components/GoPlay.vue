@@ -188,7 +188,7 @@ func main() {
 			}
             state.running = true;
             let resp = await PostOuterApi(
-                "http://49.51.163.143:7980",
+                "https://goplay.memosa.cn",
                 "/compile",
                 qs.stringify({
                     body: state.code,
