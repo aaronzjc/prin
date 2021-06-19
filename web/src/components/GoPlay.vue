@@ -6,8 +6,7 @@
                     <article class="message is-dark">
                         <div class="message-body content is-small">
                             <p>
-                                一个简单的Go
-                                Playground工具。和官方Playground类似，用于执行Go代码片段。
+                                一个简单的Go代码执行工具，基于官方Playground移植。
                             </p>
                         </div>
                     </article>
@@ -197,7 +196,6 @@ func main() {
                 })
             );
             state.running = false;
-            console.log(resp);
             playback(PlaygroundOutput(output), resp.data);
         }
         return {
