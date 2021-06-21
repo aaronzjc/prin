@@ -50,9 +50,6 @@ export default {
 </script>
 
 <style lang="scss">
-    .container {
-        max-width: 960px !important;
-    }
     nav.navbar {
     .navbar-item {
         p {
@@ -67,6 +64,9 @@ export default {
     .navbar-brand {
         margin-left: 0 !important;
     }
+}
+.container:not(.is-max-desktop) {
+    max-width: 960px;
 }
 #footer {
     margin-top: 100px;
