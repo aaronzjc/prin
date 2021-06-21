@@ -40,7 +40,8 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "no-mixed-spaces-and-tabs": "off"
+      "no-mixed-spaces-and-tabs": "off",
+      "vue/no-parsing-error": [2, { "x-invalid-end-tag": false }]
     }
   },
   "browserslist": [

@@ -7,12 +7,13 @@ const Cert = () => import("../components/Cert")
 const Iptable = () => import("../components/Iptable")
 const JsonToGo = () => import("../components/JsonToGo")
 const GoPlay = () => import("../components/GoPlay")
+const MyJson = () => import("../components/MyJson")
 
 const baseRoutes = [
     {
         path: "/",
         name: "default",
-        redirect: "qrcode",
+        redirect: "json",
     }
 ];
 const mainRoutes = [
@@ -21,6 +22,12 @@ const mainRoutes = [
         name: "qrcode",
         title: "二维码",
         component: Qrcode
+    },
+    {
+        path: "/json",
+        name: "json",
+        title: "Json",
+        component: MyJson
     },
     {
         path: "/time",
