@@ -147,9 +147,9 @@ export default {
                 if (member.type == "number") {
                     return member.value
                 }
-                if (member.value == null) {
-                    return "null"
-                }
+            }
+            if (member.value == null) {
+                return "null"
             }
             if (member.arrow < 0) {
                 if (member.type instanceof Array) {

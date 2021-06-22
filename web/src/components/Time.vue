@@ -2,7 +2,7 @@
 <div class="columns" id="time">
     <div class="column">
         <article class="message is-dark">
-            <div class="message-body">
+            <div class="message-body content is-small">
                 当前时间 <span class="tag is-info is-light">{{ state.current.time }}</span>
                 时间戳 <span class="tag is-info is-light">{{ state.current.timestamp }}</span>
                 <span class="tag is-info refresh" @click="fetchCurrentTime">刷新一下</span>
@@ -117,6 +117,7 @@ export default {
 #time {
     .refresh {
         cursor: pointer;
+        margin-left: .2rem;
     }
 }
 </style>
