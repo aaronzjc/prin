@@ -52,7 +52,7 @@
                                                 'treeRow',
                                                 { hasChildren: item.ar > 0 },
                                             ]"
-                                            v-show="item.sh"
+                                            v-if="item.sh"
                                         >
                                             <td
                                                 class="treeLabelCell"
