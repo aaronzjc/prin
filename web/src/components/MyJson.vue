@@ -404,7 +404,7 @@ export default {
         color: blue;
     }
     .jsonTobject {
-        color: grey;
+        color: #333;
     }
 }
 </style>
