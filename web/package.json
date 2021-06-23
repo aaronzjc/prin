@@ -11,6 +11,7 @@
     "axios": "^0.21.0",
     "bulma": "^0.9.1",
     "core-js": "^3.6.5",
+    "jsoneditor": "^9.5.0",
     "qs": "^6.10.1",
     "vue": "^3.0.0",
     "vue-flatpickr-component": "^9.0.2",

@@ -24,8 +24,8 @@
 
 <script>
 import { onMounted, reactive } from '@vue/runtime-core'
-import JSONEditor from "../lib/jsoneditor/jsoneditor"
-import "../lib/jsoneditor/jsoneditor.css"
+import JSONEditor from "jsoneditor"
+import "jsoneditor/dist/jsoneditor.css"
 
 export default {
     name: "Zson",
