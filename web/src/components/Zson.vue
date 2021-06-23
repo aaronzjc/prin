@@ -34,11 +34,14 @@ export default {
             "json": {
                 "string": "Hello World"
             },
-            editor: null,
+            editor: undefined,
             mode: "code"
         })
         
         onMounted(() => {
+            if (state.editor != undefined) {
+                return true
+            }
             const container = document.getElementById('jsoneditor')
             const options = {
                 mode: state.mode,
