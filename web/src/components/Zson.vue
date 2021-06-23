@@ -39,9 +39,7 @@ export default {
         })
         
         onMounted(() => {
-            if (state.editor != undefined) {
-                state.editor.destroy()
-            }
+            document.getElementById('jsoneditor').innerHTML = ""
             const container = document.getElementById('jsoneditor')
             const options = {
                 mode: state.mode,
