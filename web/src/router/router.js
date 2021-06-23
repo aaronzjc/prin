@@ -7,7 +7,7 @@ const Cert = () => import("../components/Cert")
 const Iptable = () => import("../components/Iptable")
 const JsonToGo = () => import("../components/JsonToGo")
 const GoPlay = () => import("../components/GoPlay")
-const MyJson = () => import("../components/MyJson")
+const Zson = () => import("../components/Zson")
 
 const baseRoutes = [
     {
@@ -27,7 +27,7 @@ const mainRoutes = [
         path: "/json",
         name: "json",
         title: "Json",
-        component: MyJson
+        component: Zson
     },
     {
         path: "/time",
