@@ -68,5 +68,5 @@ jobs:
           EOF
           export KUBECONFIG=$(pwd)/kube-config
           curl -o prin.yml https://raw.githubusercontent.com/aaronzjc/k3s/main/Deployment/prin.yml
-          echo ${{ steps.prep.outputs.ci_commit_sha }}
-          kubectl rollout restart -f prin.yml -n k3s-apps
+          sed -i "s/latest/${{ steps.prep.outputs.ci_commit_sha }}" prin.yml
+          kubectl apply -f prin.yml -n k3s-apps
