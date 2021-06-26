@@ -11,10 +11,9 @@ jobs:
   Build_and_Release:
     name: Build & Release & Deploy
     runs-on: ubuntu-latest
+    env:
+      SHA8: ${GITHUB_SHA::8}
     steps:
-      - name: set vars
-        id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: checkout code
         uses: actions/checkout@v2
       - name: setup nodejs
@@ -48,7 +47,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: aaronzjc/prin
-          tags: latest, ${{ steps.vars.outputs.sha_short }}
+          tags: latest, $SHA8
       - name: setup ktl
         uses: azure/setup-kubectl@v1
         id: install
@@ -59,6 +58,6 @@ jobs:
           EOF
           export KUBECONFIG=$(pwd)/kube-config
           curl -o prin.yml https://raw.githubusercontent.com/aaronzjc/k3s/main/Deployment/prin.yml
-          sed -i ""s/latest/${{ steps.vars.outputs.sha_short }}/g" prin.yml
+          sed -i ""s/latest/$SHA8/g" prin.yml
           car prin.yml
           kubectl rollout restart -f prin.yml -n k3s-apps
