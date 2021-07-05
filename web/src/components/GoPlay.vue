@@ -210,7 +210,6 @@ func main() {
             state.editor = ace.edit(aceRef.value,{
                 minLines: 40, // 最小行数，还未到最大行数时，编辑器会自动伸缩大小
                 fontSize: 14, // 编辑器内字体大小
-                themePath: "ace/theme/chrome",
                 mode: "ace/mode/golang", // 默认设置的语言模式
                 tabSize: 4, // 制表符设置为 4 个空格大小
                 fontFamily: "Consolas, Monaco",

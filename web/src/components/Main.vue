@@ -23,11 +23,9 @@
         </div>
     </div>
     <router-view v-slot="{ Component }">
-        <transition>
-            <keep-alive>
-                <component :is="Component" />
-            </keep-alive>
-        </transition>
+        <keep-alive>
+            <component :is="Component" />
+        </keep-alive>
     </router-view>
     <div class="columns" id="footer">
         <div class="column copyright has-text-centered">
