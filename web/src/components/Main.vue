@@ -22,7 +22,11 @@
             </div>
         </div>
     </div>
-    <router-view></router-view>
+    <router-view v-slot="{ Component }">
+        <keep-alive>
+            <component :is="Component" />
+        </keep-alive>
+    </router-view>
     <div class="columns" id="footer">
         <div class="column copyright has-text-centered">
             <p><a href="https://github.com/aaronzjc">@aaronzjc</a>开发，源码<a href="https://github.com/aaronzjc/prin">在此</a>，欢迎Star v1.0</p>
