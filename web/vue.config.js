@@ -15,5 +15,10 @@ module.exports = {
     },
     devServer: {
         disableHostCheck: true
+    },
+    configureWebpack: {
+        externals: {
+            ace: "ace"
+        }
     }
 };

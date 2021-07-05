@@ -30,12 +30,7 @@
             </div>
             <div class="columns" id="code-block">
                 <div class="column is-half">
-                    <textarea
-                        class="textarea"
-                        v-model="state.code"
-                        rows="20"
-                        placeholder="随便写一点Go代码"
-                    ></textarea>
+                    <div class="ace-editor" ref="aceRef"></div>
                 </div>
                 <div class="column is-half">
                     <div id="output"><pre></pre></div>
@@ -47,25 +42,22 @@
 
 <script>
 import qs from "qs";
-import { reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { PostOuterApi } from "../tools/http";
+import ace from 'ace-builds'
+import 'ace-builds/webpack-resolver' 
+import 'ace-builds/src-noconflict/theme-chrome'
+import 'ace-builds/src-noconflict/mode-golang'
 
 export default {
     name: "GoPlay",
     setup() {
         const state = reactive({
-            code: `package main
-
-import (
-	"fmt"
-)
-
-func main() {
-	fmt.Println("Hello, playground")
-}
-`,
+            aceEditor: null,
             running: false,
         });
+        const aceRef = ref(null)
+
         function playback(output, data) {
             // Backwards compatibility: default values do not affect the output.
             var events = data.Events || [];
@@ -182,7 +174,8 @@ func main() {
 			var output = document.getElementById("output")
 			output.innerHTML = ""
 			output = output.appendChild(document.createElement("pre"))
-			if (state.code == "") {
+            let code = state.editor.session.getValue()
+			if (code == "") {
 				return false
 			}
             state.running = true;
@@ -190,7 +183,7 @@ func main() {
                 "https://goplay.memosa.cn",
                 "/compile",
                 qs.stringify({
-                    body: state.code,
+                    body: code,
                     version: "2",
                     withVet: false,
                 })
@@ -198,8 +191,37 @@ func main() {
             state.running = false;
             playback(PlaygroundOutput(output), resp.data);
         }
+
+        const tpl = `package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("Hello, playground")
+    fmt.Println("By Ace Editor")
+}`
+        
+        onMounted(() => {
+            if (state.editor !== undefined) {
+                return
+            }
+            state.editor = ace.edit(aceRef.value,{
+                minLines: 40, // 最小行数，还未到最大行数时，编辑器会自动伸缩大小
+                fontSize: 14, // 编辑器内字体大小
+                themePath: "ace/theme/chrome",
+                mode: "ace/mode/golang", // 默认设置的语言模式
+                tabSize: 4, // 制表符设置为 4 个空格大小
+                fontFamily: "Consolas, Monaco",
+                highlightActiveLine: false,
+            })
+            state.editor.session.setValue(tpl)
+        })
+
         return {
             state,
+            aceRef,
             run,
         };
     },
@@ -207,6 +229,19 @@ func main() {
 </script>
 
 <style scoped>
+.ace-editor {
+    border: 1px solid #ccc;
+    height: 450px;
+}
+.ace-editor /deep/ .ace_print-margin{ 
+    display:none;
+}
+.ace-editor /deep/ .ace_gutter {
+    background: #fff !important;
+}
+.ace-editor /deep/ .ace_gutter-active-line {
+    background: #fff !important;
+}
 #code-block textarea {
     font-size: 0.8rem;
     font-family: Consolas, Monaco, monospace;
