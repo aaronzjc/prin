@@ -17,6 +17,19 @@
                 <div class="column">
                     <div id="jsoneditor" style="height: 600px"></div>
                 </div>
+                <div class="column is-narrow pl-0">
+                    <div id="tag-tab" class="field is-grouped is-flex-direction-column">
+                        <div class="control" v-for="(page, idx) in state.pages" :key="idx">
+                            <div class="tags has-addons">
+                                <span @click="switchPage(idx)" :class="[ 'tag', { 'is-grey': idx != state.current }, { 'is-info' : idx == state.current } ]">{{ page.title }}</span>
+                                <a class="tag is-delete" @click="delPage(idx)"></a>
+                            </div>
+                        </div>
+                        <div class="control add" @click="addPage" v-if="state.pages.length < 10">
+                            <span class="tag is-btn">添加页签</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -31,9 +44,9 @@ export default {
     name: "Zson",
     setup() {
         const state = reactive({
-            "json": {
-                "string": "Hello World"
-            },
+            pages: [],
+            current: -1,
+            idx: 0,
             editor: undefined,
             mode: "code"
         })
@@ -58,13 +71,13 @@ export default {
                     return false
                 }
             }
-
-            state.editor = new JSONEditor(container, options, state.json)
+            state.editor = new JSONEditor(container, options)
+            addPage()
         })
 
         function format() {
             try {
-                JSON.parse(state.editor.getText())
+                JSON.parse(state.editor.get())
             } catch (err) {
                 return false
             }
@@ -81,12 +94,56 @@ export default {
         function collapse() {
             state.editor.collapseAll()
         }
+
+        function addPage() {
+            state.idx++
+            let title = "第 " + state.idx + " 页" 
+            let tpl = {
+                title: title,
+                data: {"hi": "this is page " + state.idx }
+            }
+            state.pages.push(tpl)
+            state.current++
+            state.editor.set(state.pages[state.current]["data"])
+        }
+        function delPage(idx) {
+            if (state.pages.length <= 1) {
+                return 
+            }
+            state.pages.splice(idx, 1)
+            state.current--
+            if (state.current < 0) {
+                state.current = 0
+            }
+            state.editor.set(state.pages[state.current]["data"])
+        }
+        function switchPage(idx) {
+            // 暂存修改过的数据
+            let validJson = {}
+            try {
+                validJson = state.editor.get()
+            } catch(err) {
+                if (!confirm("当前JSON无效，切换页签将丢失数据，是否继续")) {
+                    return
+                }
+            }
+            state.mode = "code"
+            state.editor.setMode(state.mode)
+            state.pages[state.current]["data"] = validJson
+
+            // 切换到新的页签
+            state.editor.set(state.pages[idx]["data"])
+            state.current = idx
+        }
         return {
             state,
             switchMode,
             expand,
             collapse,
-            format
+            format,
+            addPage,
+            delPage,
+            switchPage,
         }
     }
 }
@@ -103,5 +160,15 @@ div.jsoneditor-menu {
 }
 .ace-jsoneditor .ace_gutter-active-line {
     background: #fff;;
+}
+#tag-tab .control {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+#tag-tab .tag {
+    border-radius: 0;
+}
+#tag-tab .tag:hover {
+    cursor: pointer;
 }
 </style>
