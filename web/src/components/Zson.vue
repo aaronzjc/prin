@@ -18,15 +18,15 @@
                     <div id="jsoneditor" style="height: 600px"></div>
                 </div>
                 <div class="column is-narrow pl-0">
-                    <div id="tag-tab" class="field is-grouped is-flex-direction-column">
+                    <div id="tag-tab" class="field is-grouped is-flex-direction-column is-align-items-center">
                         <div class="control" v-for="(page, idx) in state.pages" :key="idx">
                             <div class="tags has-addons">
                                 <span @click="switchPage(idx)" :class="[ 'tag', { 'is-grey': idx != state.current }, { 'is-info' : idx == state.current } ]">{{ page.title }}</span>
                                 <a class="tag is-delete" @click="delPage(idx)"></a>
                             </div>
                         </div>
-                        <div class="control add" @click="addPage" v-if="state.pages.length < 10">
-                            <span class="tag is-btn">添加页签</span>
+                        <div class="control add" @click="addPage" v-if="state.pages.length < 9">
+                            <button class="button is-small is-warning">ADD  PAGE</button>
                         </div>
                     </div>
                 </div>
@@ -77,7 +77,7 @@ export default {
 
         function format() {
             try {
-                JSON.parse(state.editor.get())
+                JSON.parse(state.editor.getText())
             } catch (err) {
                 return false
             }
@@ -96,10 +96,15 @@ export default {
         }
 
         function addPage() {
-            state.idx++
-            let title = "第 " + state.idx + " 页" 
+            let maxIdx = 0
+            if (state.pages.length > 0) {
+                maxIdx = state.pages[state.pages.length-1]["idx"]
+            }
+            state.idx = ++maxIdx
+            let title = "第 " + (state.idx < 10 ? "0" + state.idx : state.idx) + " 页" 
             let tpl = {
                 title: title,
+                idx: state.idx,
                 data: {"hi": "this is page " + state.idx }
             }
             state.pages.push(tpl)
