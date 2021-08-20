@@ -4,29 +4,31 @@
             <div class="columns">
                 <div class="column pt-0 pb-0">
                     <div class="buttons are-small">
-                        <button class="button is-info" @click="switchMode">{{ state.mode == "tree" ? "源码" : "树形" }}</button>
-                        <button class="button is-light" v-if="state.mode == 'code'" @click="format">格式化</button>
-                        <template v-if="state.mode == 'tree'">
-                            <button class="button is-light" @click="collapse">折叠全部</button>
-                            <button class="button is-light" @click="expand">展开全部</button>
-                        </template>
+                        <button class="button is-light"  @click="format">格式化</button>
+                        <button class="button is-light"  @click="tar">压缩</button>
+                        <button class="button is-light"  @click="unesc">去除转义</button>
                     </div>
                 </div>
             </div>
             <div class="columns" id="code-block">
-                <div class="column">
-                    <div id="jsoneditor" style="height: 600px"></div>
+                <div class="column json-editor">
+                    <v-ace-editor
+                        v-model:value="state.content"
+                        lang="json"
+                        @init="initEditor"
+                        theme="tomorrow"
+                        style="height: 600px" />
                 </div>
                 <div class="column is-narrow pl-0">
                     <div id="tag-tab" class="field is-grouped is-flex-direction-column is-align-items-center">
                         <div class="control" v-for="(page, idx) in state.pages" :key="idx">
                             <div class="tags has-addons">
-                                <span @click="switchPage(idx)" :class="[ 'tag', { 'is-grey': idx != state.current }, { 'is-info' : idx == state.current } ]">{{ page.title }}</span>
-                                <a class="tag is-delete" @click="delPage(idx)"></a>
+                                <span @click="swit(idx)" :class="[ 'tag', { 'is-grey': idx != state.current }, { 'is-info' : idx == state.current } ]">草稿</span>
+                                <a class="tag is-delete" @click="del(idx)"></a>
                             </div>
                         </div>
-                        <div class="control add" @click="addPage" v-if="state.pages.length < 9">
-                            <button class="button is-small is-warning">ADD  PAGE</button>
+                        <div class="control add" @click="add" v-if="state.pages.length < 9">
+                            <button class="button is-small is-warning">新建草稿</button>
                         </div>
                     </div>
                 </div>
@@ -36,82 +38,32 @@
 </template>
 
 <script>
-import { onMounted, reactive } from '@vue/runtime-core'
-import JSONEditor from "jsoneditor"
-import "jsoneditor/dist/jsoneditor.css"
+import { reactive } from '@vue/runtime-core'
+import { VAceEditor } from 'vue3-ace-editor';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/theme-tomorrow';
 
 export default {
     name: "Zson",
+    components: {
+        VAceEditor
+    },
     setup() {
         const state = reactive({
             pages: [],
             current: -1,
-            idx: 0,
-            editor: undefined,
-            mode: "code"
-        })
-        
-        onMounted(() => {
-            document.getElementById('jsoneditor').innerHTML = ""
-            const container = document.getElementById('jsoneditor')
-            const options = {
-                mode: state.mode,
-                indentation: 4,
-                mainMenuBar: false,
-                navigationBar: false,
-                statusBar: false,
-                modes: ['code', 'tree'],
-                onError: function (err) {
-                    alert(err.toString())
-                },
-                onModeChange: function (newMode, oldMode) {
-                    console.log('Mode switched from', oldMode, 'to', newMode)
-                },
-                timestampTag: function() {
-                    return false
-                }
-            }
-            state.editor = new JSONEditor(container, options)
-            addPage()
+            content: "",
+            editor: null
         })
 
-        function format() {
-            try {
-                JSON.parse(state.editor.getText())
-            } catch (err) {
-                return false
-            }
-            state.editor.set(state.editor.get())
-        }
-        function switchMode() {
-            state.mode = state.mode == "code" ? "tree" : "code"
-            state.editor.setMode(state.mode)
-            
-        }
-        function expand() {
-            state.editor.expandAll()
-        }
-        function collapse() {
-            state.editor.collapseAll()
-        }
-
-        function addPage() {
-            let maxIdx = 0
+        function add() {
             if (state.pages.length > 0) {
-                maxIdx = state.pages[state.pages.length-1]["idx"]
+                state.pages[state.current] = state.content
             }
-            state.idx = ++maxIdx
-            let title = "第 " + (state.idx < 10 ? "0" + state.idx : state.idx) + " 页" 
-            let tpl = {
-                title: title,
-                idx: state.idx,
-                data: {"hi": "this is page " + state.idx }
-            }
-            state.pages.push(tpl)
-            state.current++
-            state.editor.set(state.pages[state.current]["data"])
-        }
-        function delPage(idx) {
+            state.pages.push(JSON.stringify({"hello": "hello from prin ."}, null, 4))
+            swit(state.pages.length-1)
+        } // 新增
+        function del(idx) {
             if (state.pages.length <= 1) {
                 return 
             }
@@ -120,52 +72,61 @@ export default {
             if (state.current < 0) {
                 state.current = 0
             }
-            state.editor.set(state.pages[state.current]["data"])
-        }
-        function switchPage(idx) {
-            // 暂存修改过的数据
-            let validJson = {}
-            try {
-                validJson = state.editor.get()
-            } catch(err) {
-                if (!confirm("当前JSON无效，切换页签将丢失数据，是否继续")) {
-                    return
-                }
-            }
-            state.mode = "code"
-            state.editor.setMode(state.mode)
-            state.pages[state.current]["data"] = validJson
-
-            // 切换到新的页签
-            state.editor.set(state.pages[idx]["data"])
+            state.content = state.pages[state.current]
+        } // 删除
+        function swit(idx) {
+            state.pages[state.current] = state.content
+            state.content = state.pages[idx]
             state.current = idx
+        } // 切换
+        // 格式化
+        function format() {
+            try {
+                state.content = JSON.stringify(JSON.parse(state.content), null, 4)
+            } catch (e) {
+                alert("格式化失败")
+            }
+        }
+
+        function tar() {
+            try {
+                state.content = JSON.stringify(JSON.parse(state.content))
+            } catch (e) {
+                alert("压缩失败")
+            }
+        }
+
+        function unesc() {
+            state.content = state.content.replace(/\\\\/g, '\\').replace(/\\\"/g, '"')
+        }
+
+        function initEditor(editor) {
+            state.editor = editor
+            editor.setOption("showPrintMargin", false);
+            editor.setOption("fontSize", 12.5);
+            editor.setOption("wrap", true);
+
+            add()
         }
         return {
             state,
-            switchMode,
-            expand,
-            collapse,
+            add,
+            del,
+            swit,
             format,
-            addPage,
-            delPage,
-            switchPage,
+            tar,
+            unesc,
+            initEditor
         }
     }
 }
 </script>
 
 <style>
-div.jsoneditor,
-div.jsoneditor-menu {
-    border-color: #dadada;
+div.json-editor > .ace_editor{
+    border: 1px solid #dadada;
 }
-.ace-jsoneditor .ace_gutter {
-    background: #fff;
-    color: #333
-}
-.ace-jsoneditor .ace_gutter-active-line {
-    background: #fff;;
-}
+
 #tag-tab .control {
     margin-right: 0.5rem;
     margin-bottom: 0.5rem;

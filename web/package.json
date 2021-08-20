@@ -12,11 +12,11 @@
     "axios": "^0.21.0",
     "bulma": "^0.9.1",
     "core-js": "^3.6.5",
-    "jsoneditor": "^9.5.0",
     "qs": "^6.10.1",
     "vue": "^3.0.0",
     "vue-flatpickr-component": "^9.0.2",
-    "vue-router": "^4.0.0-rc.2"
+    "vue-router": "^4.0.0-rc.2",
+    "vue3-ace-editor": "^2.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -43,6 +43,7 @@
     },
     "rules": {
       "no-mixed-spaces-and-tabs": "off",
+      "no-useless-escape": "off",
       "vue/no-parsing-error": [
         2,
         {
