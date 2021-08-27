@@ -16,7 +16,7 @@
                         v-model:value="state.content"
                         lang="json"
                         @init="initEditor"
-                        theme="tomorrow"
+                        theme="github"
                         style="height: 600px" />
                 </div>
                 <div class="column is-narrow pl-0">
@@ -41,7 +41,7 @@
 import { reactive } from '@vue/runtime-core'
 import { VAceEditor } from 'vue3-ace-editor';
 import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-tomorrow';
+import 'ace-builds/src-noconflict/theme-github';
 
 export default {
     name: "Zson",
@@ -103,7 +103,8 @@ export default {
         function initEditor(editor) {
             state.editor = editor
             editor.setOption("showPrintMargin", false);
-            editor.setOption("fontSize", 12.5);
+            editor.setOption("fontSize", 13);
+            editor.setOption("fontFamily", '"dejavu sans mono", "droid sans mono", consolas, monaco, "lucida console", "courier new", courier, monospace, sans-serif');
             editor.setOption("wrap", true);
 
             add()
