@@ -95,6 +95,7 @@ export default {
 
             .data {
                 margin-right: 4px;
+                word-break: break-all;
             }
         }
     }
