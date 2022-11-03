@@ -4,7 +4,7 @@ const Qrcode = () => import("../components/Qrcode")
 const Time = () => import("../components/Time")
 const Coder = () => import("../components/Coder")
 const Cert = () => import("../components/Cert")
-const Iptable = () => import("../components/Iptable")
+const Iptables = () => import("../components/Iptables")
 const JsonToGo = () => import("../components/JsonToGo")
 const GoPlay = () => import("../components/GoPlay")
 const Zson = () => import("../components/Zson")
@@ -48,10 +48,10 @@ const mainRoutes = [
         component: Cert
     },
     {
-        path: "/iptable",
-        name: "iptable",
-        title: "IPTable",
-        component: Iptable
+        path: "/iptables",
+        name: "iptables",
+        title: "IPTables",
+        component: Iptables
     },
     {
         path: "/jsontogo",

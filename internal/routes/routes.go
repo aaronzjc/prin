@@ -1,13 +1,14 @@
 package routes
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"prin/internal/app"
 	"prin/internal/routes/cert"
 	"prin/internal/routes/coder"
-	"prin/internal/routes/iptable"
+	"prin/internal/routes/iptables"
 	"prin/internal/routes/qrcode"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func RegisterStatic() {
@@ -35,6 +36,7 @@ func RegisterStatic() {
 
 func RegisterRoutes() {
 	r := app.App.Gin
+	r.Use(gin.Recovery())
 
 	c := cors.New(cors.Config{
 		AllowOriginFunc:  func(origin string) bool { return true },
@@ -50,7 +52,7 @@ func RegisterRoutes() {
 		api.POST("/qrcode", qrcode.Generate)
 		api.POST("/coder", coder.Decode)
 		api.POST("/cert", cert.Generate)
-		api.POST("/iptable", iptable.Beauty)
+		api.POST("/iptables", iptables.Beauty)
 	}
 
 	RegisterStatic()
