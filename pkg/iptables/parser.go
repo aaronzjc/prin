@@ -3,9 +3,17 @@ package iptables
 import (
 	"bufio"
 	"errors"
-	"fmt"
+	"log"
 	"regexp"
 	"strings"
+)
+
+var (
+	traffic = map[string][]string{
+		"in":      {"raw:PREROUTING", "mangle:PREROUTING", "nat:PREROUTING", "mangle:INPUT", "filter:INPUT", "nat:INPUT"},
+		"forward": {"raw:PREROUTING", "mangle:PREROUTING", "nat:PREROUTING", "mangle:FORWARD", "filter:FORWARD", "mangle:POSTROUTING", "nat:POSTROUTING"},
+		"out":     {"raw:OUTPUT", "mangle:OUTPUT", "nat:OUTPUT", "filter:output", "mangle:POSTROUTING", "nat:POSTROUTING"},
+	}
 )
 
 type Table struct {
@@ -52,7 +60,7 @@ type Rule struct {
 func (r *Rule) AddMatch(match *Match) {
 	// if it is comment, we dont treat it as a match
 	if match.Name == "comment" {
-		r.Comment = match.Flags["--comment"].Val
+		r.Comment = match.Flags[0].Val
 		return
 	}
 	r.Matches = append(r.Matches, match)
@@ -60,43 +68,57 @@ func (r *Rule) AddMatch(match *Match) {
 
 type Flag struct {
 	IsNot bool
+	Key   string
 	Val   string
+}
+
+func (f Flag) String() (res string) {
+	if res = f.Key + f.Val; res == "" {
+		return
+	}
+	if f.Key != "" && f.Val != "" {
+		if f.IsNot {
+			return f.Key + " != " + f.Val
+		}
+		return f.Key + " = " + f.Val
+	}
+	if f.IsNot {
+		res = "! " + res
+	}
+	return
 }
 
 type Match struct {
 	Name  string
-	Flags map[string]Flag
+	Flags []Flag
 }
 
 func (m *Match) String() string {
 	var str string
-	for k, v := range m.Flags {
-		if v.IsNot {
-			str = str + fmt.Sprintf("(NOT %s=%s)", k, v.Val)
-		} else {
-			str = str + fmt.Sprintf("(%s=%s)", k, v.Val)
-		}
+	for _, v := range m.Flags {
+		str = str + "(" + v.String() + ")"
 	}
-	return m.Name + ":" + str
+	if str != "" {
+		return m.Name + ":" + str
+	}
+	return m.Name
 }
 
 func (m *Match) Parse(s *Scanner) error {
-	m.Flags = make(map[string]Flag)
+	m.Flags = []Flag{}
 	m.Name, _ = s.ReadWord()
 	for {
+		var flag Flag
 		try, err := s.Peek(2)
 		if err != nil {
 			return errors.New("invalid match")
 		}
-		if try == "" {
+		if try == "" || (try != "! " && try != "--") {
 			return nil
 		}
-		if try != "--" {
-			return nil
-		}
-		flag := Flag{}
 		if try == "! " {
 			flag.IsNot = true
+			s.ReadWord() // skip "!"
 		}
 		key, _ := s.ReadWord()
 		if key == "--comment" {
@@ -104,28 +126,22 @@ func (m *Match) Parse(s *Scanner) error {
 		} else {
 			flag.Val, _ = s.ReadWord()
 		}
-		m.Flags[key] = flag
+		flag.Key = key
+		m.Flags = append(m.Flags, flag)
 	}
 }
 
 type Target struct {
-	Name  string
-	Flags map[string]string
+	Name string
+	Flag Flag
 }
 
 func (t *Target) String() string {
-	str := []string{t.Name}
-	for k, v := range t.Flags {
-		if v != "" {
-			k = k + "=" + v
-		}
-		str = append(str, k)
-	}
-	return strings.Join(str, " ")
+	return t.Name + " " + t.Flag.String()
 }
 
 func (t *Target) Parse(s *Scanner) error {
-	t.Flags = make(map[string]string)
+	t.Flag = Flag{}
 	t.Name, _ = s.ReadWord()
 	for {
 		try, err := s.Peek(2)
@@ -138,9 +154,8 @@ func (t *Target) Parse(s *Scanner) error {
 		if try != "--" {
 			return nil
 		}
-		key, _ := s.ReadWord()
-		val, _ := s.ReadWord()
-		t.Flags[key] = val
+		t.Flag.Key, _ = s.ReadWord()
+		t.Flag.Val, _ = s.ReadWord()
 	}
 }
 
@@ -182,6 +197,7 @@ func (p *Parser) Parse() error {
 			// rule define
 			rule, err := p.parseRule(line)
 			if err != nil {
+				log.Printf("parse rule err = %v, skip [%s]", err, line)
 				continue
 			}
 			rule.Chain.Add(rule)
@@ -215,10 +231,11 @@ func (p *Parser) parseRule(line string) (*Rule, error) {
 	rule.Table = p.ct
 	rule.Chain = chain
 
-	// 去除注释
+	// remove comment and save
 	re := regexp.MustCompile(`-m comment --comment \".*\" `)
 	rule.Text = re.ReplaceAllString(line, "")
 
+	var isNot bool
 	for {
 		word, err := s.ReadWord()
 		if err != nil {
@@ -227,21 +244,20 @@ func (p *Parser) parseRule(line string) (*Rule, error) {
 		if word == "" {
 			break
 		}
-		var isNot bool
 		switch word {
 		case "!":
 			isNot = true
 		case "-p":
 			val, _ := s.ReadWord()
-			rule.Proto = Flag{IsNot: isNot, Val: val}
+			rule.Proto = Flag{IsNot: isNot, Key: "--protocol", Val: val}
 			isNot = false
 		case "-d":
 			val, _ := s.ReadWord()
-			rule.Dst = Flag{IsNot: isNot, Val: val}
+			rule.Dst = Flag{IsNot: isNot, Key: "--destination", Val: val}
 			isNot = false
 		case "-s":
 			val, _ := s.ReadWord()
-			rule.Src = Flag{IsNot: isNot, Val: val}
+			rule.Src = Flag{IsNot: isNot, Key: "--source", Val: val}
 			isNot = false
 		case "-m":
 			match := Match{}
@@ -260,14 +276,9 @@ func (p *Parser) parseRule(line string) (*Rule, error) {
 }
 
 func (p *Parser) Render(t string) []*OutChain {
-	traffic := map[string][]string{
-		"in":      {"raw:PREROUTING", "mangle:PREROUTING", "nat:PREROUTING", "mangle:INPUT", "filter:INPUT", "nat:INPUT"},
-		"forward": {"raw:PREROUTING", "mangle:PREROUTING", "nat:PREROUTING", "mangle:FORWARD", "filter:FORWARD", "mangle:POSTROUTING", "nat:POSTROUTING"},
-		"out":     {"raw:OUTPUT", "mangle:OUTPUT", "nat:OUTPUT", "filter:output", "mangle:POSTROUTING", "nat:POSTROUTING"},
-	}
 	var formatChain func(string, string) *OutChain
 	formatChain = func(tableName string, chainName string) (out *OutChain) {
-		out = &OutChain{Name: tableName + ":" + chainName, Rules: []OutRule{}}
+		out = &OutChain{Name: tableName + ":" + chainName, Rules: []*OutRule{}}
 		table, ok := p.tm[tableName]
 		if !ok {
 			return
@@ -277,17 +288,28 @@ func (p *Parser) Render(t string) []*OutChain {
 			return
 		}
 		out.Policy = chain.Policy
-		out.Rules = make([]OutRule, len(chain.Rules))
+		out.Rules = make([]*OutRule, len(chain.Rules))
 		for kk, rr := range chain.Rules {
-			out.Rules[kk] = OutRule{Text: rr.Text, Comment: rr.Comment}
+			or := OutRule{Text: rr.Text, Comment: rr.Comment}
+			out.Rules[kk] = &or
 			matches := []string{}
+			// -d, -s, -p
+			if rr.Dst.Val != "" {
+				matches = append(matches, rr.Dst.String())
+			}
+			if rr.Src.Val != "" {
+				matches = append(matches, rr.Src.String())
+			}
+			if rr.Proto.Val != "" {
+				matches = append(matches, rr.Proto.String())
+			}
 			for _, mm := range rr.Matches {
 				matches = append(matches, mm.String())
 			}
-			out.Rules[kk].Matches = matches
-			out.Rules[kk].Target = rr.Target.String()
+			or.Matches = matches
+			or.Target = rr.Target.String()
 			if _, err := rr.Table.GetChain(rr.Target.Name); err == nil {
-				out.Rules[kk].Chains = []*OutChain{formatChain(rr.Table.Name, rr.Target.Name)}
+				or.Chains = []*OutChain{formatChain(rr.Table.Name, rr.Target.Name)}
 			}
 		}
 		return
@@ -308,7 +330,7 @@ type OutChain struct {
 	Name   string `json:"name"`
 	Policy string `json:"policy"`
 
-	Rules []OutRule `json:"rules"`
+	Rules []*OutRule `json:"rules"`
 }
 
 type OutRule struct {

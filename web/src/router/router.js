@@ -6,7 +6,7 @@ const Coder = () => import("../components/Coder")
 const Cert = () => import("../components/Cert")
 const Iptables = () => import("../components/Iptables")
 const JsonToGo = () => import("../components/JsonToGo")
-const GoPlay = () => import("../components/GoPlay")
+// const GoPlay = () => import("../components/GoPlay")
 const Zson = () => import("../components/Zson")
 
 const baseRoutes = [
@@ -59,12 +59,13 @@ const mainRoutes = [
         title: "JsonToGo",
         component: JsonToGo
     },
-    {
-        path: "/goplay",
-        name: "goplay",
-        title: "GoPlay",
-        component: GoPlay
-    }
+    // 移除GoPlay，少且不稳定
+    // {
+    //     path: "/goplay",
+    //     name: "goplay",
+    //     title: "GoPlay",
+    //     component: GoPlay
+    // }
 ];
 const router = createRouter({
     history: createWebHashHistory(),

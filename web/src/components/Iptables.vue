@@ -121,6 +121,14 @@ textarea {
     text-decoration-style: wavy;
     cursor: pointer;
 }
+.rule-match span.text-orange {
+    border: 1px solid #F59E0B;
+    border-radius: 0.25rem;
+    margin: 0px 0.25rem;
+    padding: 0 0.25rem;
+    font-size: 0.75rem;
+    line-height: 0.75rem;
+}
 #iptable-panel .rules,#iptable-panel .chain-info {
     margin-left: 1rem;
 }
