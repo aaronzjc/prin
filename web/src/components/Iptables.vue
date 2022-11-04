@@ -7,7 +7,7 @@
                 <div class="message-body content is-small">
                     <p>格式化IPTables规则，使其更加直观，使用方法: </p>
                     <ol type="1">
-                        <li>登录服务器执行`iptables-save`，复制输出的内容。</li>
+                        <li>登录服务器执行<span class="tag is-link is-light">iptables-save</span>，复制输出的内容。</li>
                         <li>粘贴到文本框，选择一个数据流方向，然后点击美化。</li>
                         <li>数据流一般有三种：发往本机(in)，转发(forward)，本机发出(out)。</li>
                     </ol>
