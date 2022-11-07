@@ -26,7 +26,7 @@
                 </a>
             </p>
             <p class="control">
-                <a class="button is-white">
+                <a class="button is-white" @click="greet">
                 = . = 
                 </a>
             </p>
@@ -98,13 +98,23 @@ export default {
             state.time = timestampToTime(state.timestamp)
         }
 
+        function greet() {
+            let tips = [
+                "你是最棒的",
+                "你只是运气不好，永远不要否认自己的才华"
+            ]
+            let idx = Math.floor(Math.random() * tips.length)
+            alert(tips[idx])
+        }
+
         onMounted(fetchCurrentTime)
 
         return {
             state,
             fetchCurrentTime,
             toTimestamp,
-            toTime
+            toTime,
+            greet
         }
     },
     components: {

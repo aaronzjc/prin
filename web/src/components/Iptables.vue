@@ -28,6 +28,7 @@
                 <textarea class="textarea" v-model="state.input" placeholder="请输入原始内容"></textarea>
                 <div class="buttons is-centered mt-4">
                     <button :class="[ 'button', 'is-info', { 'is-loading' : state.loading } ]" @click="formatTable">美化一下试试</button>
+                    <button :class="[ 'button', 'is-primary' ]" @click="mock">查看示例</button>
                 </div>
             </div>
         </div>
@@ -45,6 +46,7 @@
 <script>
 import { reactive, readonly } from 'vue'
 import {Post} from "../tools/http"
+import mockRules from "./ext/iptables/mock"
 
 export default {
     name: "Iptables",
@@ -77,11 +79,17 @@ export default {
                 state.chainData = resp.data.data
             }
         }
+
+        function mock() {
+            state.input = mockRules
+            formatTable()
+        }
         return {
             state,
             tags,
             switchTag,
-            formatTable
+            formatTable,
+            mock
         }
     }
 }

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prin
+  namespace: k3s-apps
+spec:
+  selector:
+    matchLabels:
+      app: prin
+  replicas: 2
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: prin
+    spec:
+      volumes:
+      - name: tz-config
+        hostPath:
+          path: /usr/share/zoneinfo/Asia/Shanghai
+      - name: prin-log-dir
+        emptyDir: {}
+      containers:
+      - name: prin
+        image: aaronzjc/prin:1.4
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: prin-log-dir
+          mountPath: /var/log
+        ports:
+        - containerPort: 8980
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi

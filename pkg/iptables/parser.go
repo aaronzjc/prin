@@ -52,6 +52,7 @@ type Rule struct {
 	Dst     Flag
 	Src     Flag
 	Proto   Flag
+	Ifce    Flag
 	Comment string
 	Matches []*Match
 	Target  *Target
@@ -255,6 +256,10 @@ func (p *Parser) parseRule(line string) (*Rule, error) {
 			val, _ := s.ReadWord()
 			rule.Dst = Flag{IsNot: isNot, Key: "--destination", Val: val}
 			isNot = false
+		case "-i":
+			val, _ := s.ReadWord()
+			rule.Ifce = Flag{IsNot: isNot, Key: "--interface", Val: val}
+			isNot = false
 		case "-s":
 			val, _ := s.ReadWord()
 			rule.Src = Flag{IsNot: isNot, Key: "--source", Val: val}
@@ -293,7 +298,10 @@ func (p *Parser) Render(t string) []*OutChain {
 			or := OutRule{Text: rr.Text, Comment: rr.Comment}
 			out.Rules[kk] = &or
 			matches := []string{}
-			// -d, -s, -p
+			// -i, -d, -s, -p
+			if rr.Ifce.Val != "" {
+				matches = append(matches, rr.Ifce.String())
+			}
 			if rr.Dst.Val != "" {
 				matches = append(matches, rr.Dst.String())
 			}

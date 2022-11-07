@@ -3,6 +3,8 @@ bin/
 dist
 cmd/dev
 /public/
+dagger
+scripts/kubeconf.yaml
 
 # Editor directories and files
 .idea
