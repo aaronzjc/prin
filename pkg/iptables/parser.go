@@ -33,7 +33,7 @@ func (t *Table) GetChain(name string) (*Chain, error) {
 			return v, nil
 		}
 	}
-	return nil, errors.New("not found")
+	return nil, errors.New(name + " not found")
 }
 
 type Chain struct {
@@ -294,11 +294,11 @@ func (p *Parser) Render(t string) ([]*OutChain, error) {
 		out = &OutChain{Name: tableName + ":" + chainName, Rules: []*OutRule{}}
 		table, ok := p.tm[tableName]
 		if !ok {
-			return
+			return out, nil
 		}
 		chain, err := table.GetChain(chainName)
 		if err != nil {
-			return
+			return out, nil
 		}
 		out.Policy = chain.Policy
 		out.Rules = make([]*OutRule, len(chain.Rules))

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"dagger.io/dagger"
 )
@@ -15,7 +16,7 @@ type Target struct {
 }
 
 const (
-	AppVersion = "1.5"
+	AppVersion = "1.6"
 )
 
 func main() {
@@ -24,6 +25,7 @@ func main() {
 		action = os.Args[1]
 	}
 
+	start := time.Now()
 	ctx := context.Background()
 	switch action {
 	case "backend":
@@ -42,6 +44,8 @@ func main() {
 	default:
 		fmt.Println("usage: go run ./scripts/dagger.go [backend|frontend|image|deploy]")
 	}
+
+	fmt.Printf("[o]done took %.2fs\n", time.Since(start).Seconds())
 }
 
 func wrapStep(ctx context.Context, name string, fn func(context.Context) error) {
