@@ -77,6 +77,8 @@ export default {
             if (resp.data.code === 10000) {
                 state.counter++ // just force component re-render
                 state.chainData = resp.data.data
+            } else {
+                alert(resp.data.msg)
             }
         }
 

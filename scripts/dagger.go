@@ -15,7 +15,7 @@ type Target struct {
 }
 
 const (
-	AppVersion = "1.4"
+	AppVersion = "1.5"
 )
 
 func main() {

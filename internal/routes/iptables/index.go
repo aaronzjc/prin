@@ -23,8 +23,16 @@ func Beauty(c *gin.Context) {
 	}
 	s := ipt.NewScanner(bufio.NewReader(strings.NewReader(r.Data)))
 	parser := ipt.NewParser(s)
-	parser.Parse()
-	result := parser.Render(r.T)
+	err = parser.Parse()
+	if err != nil {
+		req.JSON(c, req.CodeError, "解析失败", nil)
+		return
+	}
+	result, err := parser.Render(r.T)
+	if err != nil {
+		req.JSON(c, req.CodeError, err.Error(), nil)
+		return
+	}
 
 	req.JSON(c, req.CodeSuccess, "success", result)
 	return

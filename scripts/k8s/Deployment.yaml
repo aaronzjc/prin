@@ -22,7 +22,7 @@ spec:
         emptyDir: {}
       containers:
       - name: prin
-        image: aaronzjc/prin:1.4
+        image: aaronzjc/prin:1.5
         imagePullPolicy: Always
         volumeMounts:
         - name: prin-log-dir

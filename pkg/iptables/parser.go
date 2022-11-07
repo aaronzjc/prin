@@ -2,10 +2,12 @@ package iptables
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"log"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var (
@@ -280,9 +282,15 @@ func (p *Parser) parseRule(line string) (*Rule, error) {
 	return &rule, nil
 }
 
-func (p *Parser) Render(t string) []*OutChain {
-	var formatChain func(string, string) *OutChain
-	formatChain = func(tableName string, chainName string) (out *OutChain) {
+func (p *Parser) Render(t string) ([]*OutChain, error) {
+	// 预防前端使用循环引用链，导致递归死循环，这里设置一个超时时间
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*3)
+
+	var formatChain func(string, string) (*OutChain, error)
+	formatChain = func(tableName string, chainName string) (out *OutChain, err error) {
+		if ctx.Err() != nil {
+			return nil, errors.New("处理超时")
+		}
 		out = &OutChain{Name: tableName + ":" + chainName, Rules: []*OutRule{}}
 		table, ok := p.tm[tableName]
 		if !ok {
@@ -317,7 +325,11 @@ func (p *Parser) Render(t string) []*OutChain {
 			or.Matches = matches
 			or.Target = rr.Target.String()
 			if _, err := rr.Table.GetChain(rr.Target.Name); err == nil {
-				or.Chains = []*OutChain{formatChain(rr.Table.Name, rr.Target.Name)}
+				fc, err := formatChain(rr.Table.Name, rr.Target.Name)
+				if err != nil {
+					return nil, err
+				}
+				or.Chains = []*OutChain{fc}
 			}
 		}
 		return
@@ -328,10 +340,14 @@ func (p *Parser) Render(t string) []*OutChain {
 	for k, v := range conf {
 		segs := strings.Split(v, ":")
 		tableName, chainName := segs[0], segs[1]
-		rootChains[k] = formatChain(tableName, chainName)
+		fc, err := formatChain(tableName, chainName)
+		if err != nil {
+			return nil, err
+		}
+		rootChains[k] = fc
 	}
 
-	return rootChains
+	return rootChains, nil
 }
 
 type OutChain struct {
