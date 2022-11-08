@@ -16,7 +16,7 @@ type Target struct {
 }
 
 const (
-	AppVersion = "1.6"
+	AppVersion = "1.7"
 )
 
 func main() {
@@ -66,7 +66,7 @@ func buildFrontend(ctx context.Context) error {
 		Exclude: []string{"node_modules"},
 	})
 	npm := client.Container().From("node:14-alpine")
-	npm = npm.WithMountedDirectory("/src", src).WithWorkdir("/src")
+	npm = npm.WithMountedDirectory("/src/web", src).WithWorkdir("/src/web")
 	npm = npm.Exec(dagger.ContainerExecOpts{
 		Args: []string{"npm", "install", "--sass_binary_site=https://npm.taobao.org/mirrors/node-sass/"},
 	})
