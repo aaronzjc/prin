@@ -56,19 +56,17 @@ func wrapStep(ctx context.Context, name string, fn func(context.Context) error) 
 }
 
 func buildFrontend(ctx context.Context) error {
-	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
+	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stderr))
 	if err != nil {
 		return err
 	}
 	defer client.Close()
 
-	src := client.Host().Workdir()
-	npm := client.Container().From("node:14-alpine")
-	npm = npm.WithMountedDirectory("/src", src).WithWorkdir("/src/web")
-
-	npm = npm.Exec(dagger.ContainerExecOpts{
-		Args: []string{"rm", "-rf", "node_modules"},
+	src := client.Host().Directory("./web", dagger.HostDirectoryOpts{
+		Exclude: []string{"node_modules"},
 	})
+	npm := client.Container().From("node:14-alpine")
+	npm = npm.WithMountedDirectory("/src", src).WithWorkdir("/src")
 	npm = npm.Exec(dagger.ContainerExecOpts{
 		Args: []string{"npm", "install", "--sass_binary_site=https://npm.taobao.org/mirrors/node-sass/"},
 	})
@@ -79,8 +77,7 @@ func buildFrontend(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	output := npm.Directory("/src/public")
-	if _, err := output.Export(ctx, "dagger/frontend"); err != nil {
+	if _, err := npm.Directory("/src/public").Export(ctx, "dagger/frontend"); err != nil {
 		return err
 	}
 	fmt.Println("npm stdout", build)
@@ -88,8 +85,7 @@ func buildFrontend(ctx context.Context) error {
 }
 
 func buildBackend(ctx context.Context) error {
-	fmt.Println("start build with dagger")
-	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
+	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stderr))
 	if err != nil {
 		return err
 	}
@@ -134,7 +130,7 @@ func buildBackend(ctx context.Context) error {
 }
 
 func buildAndPushImage(ctx context.Context) error {
-	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
+	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stderr))
 	if err != nil {
 		return err
 	}
@@ -153,7 +149,7 @@ func buildAndPushImage(ctx context.Context) error {
 }
 
 func deploy(ctx context.Context) error {
-	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
+	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stderr))
 	if err != nil {
 		return err
 	}
