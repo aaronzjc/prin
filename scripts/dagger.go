@@ -4,19 +4,13 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"time"
+	"prin/pkg/flow"
 
 	"dagger.io/dagger"
 )
 
-type Target struct {
-	Os   string
-	Arch string
-	Out  string
-}
-
 const (
-	AppVersion = "1.7"
+	AppVersion = "1.8"
 )
 
 func main() {
@@ -25,34 +19,26 @@ func main() {
 		action = os.Args[1]
 	}
 
-	start := time.Now()
-	ctx := context.Background()
+	fw := flow.NewFlow(context.Background())
 	switch action {
 	case "backend":
-		wrapStep(ctx, "backend", buildBackend)
+		fw.Step("backend", buildBackend)
 	case "frontend":
-		wrapStep(ctx, "frontend", buildFrontend)
+		fw.Step("frontend", buildFrontend)
 	case "image":
-		wrapStep(ctx, "backend", buildBackend)
-		wrapStep(ctx, "frontend", buildFrontend)
-		wrapStep(ctx, "image", buildAndPushImage)
+		fw.Step("backend", buildBackend)
+		fw.Step("frontend", buildFrontend)
+		fw.Step("image", buildAndPushImage)
 	case "deploy":
-		wrapStep(ctx, "backend", buildBackend)
-		wrapStep(ctx, "frontend", buildFrontend)
-		wrapStep(ctx, "image", buildAndPushImage)
-		wrapStep(ctx, "deploy", deploy)
+		fw.Step("backend", buildBackend)
+		fw.Step("frontend", buildFrontend)
+		fw.Step("image", buildAndPushImage)
+		fw.Step("deploy", deploy)
 	default:
 		fmt.Println("usage: go run ./scripts/dagger.go [backend|frontend|image|deploy]")
+		return
 	}
-
-	fmt.Printf("[o]done took %.2fs\n", time.Since(start).Seconds())
-}
-
-func wrapStep(ctx context.Context, name string, fn func(context.Context) error) {
-	if err := fn(ctx); err != nil {
-		fmt.Printf("[x]run %s failed, err = %v\n", name, err)
-	}
-	fmt.Printf("[o]run %s done\n", name)
+	fw.Run()
 }
 
 func buildFrontend(ctx context.Context) error {
@@ -91,38 +77,27 @@ func buildBackend(ctx context.Context) error {
 	}
 	defer client.Close()
 
+	envs := map[string]string{
+		"GO111MODULE": "on",
+		"GOPROXY":     "https://goproxy.cn,direct",
+		"CGO_ENABLED": "0",
+		"GOOS":        "linux",
+		"GOARCH":      "amd64",
+	}
+
 	// 获取本地项目路径
 	src := client.Host().Workdir()
-
-	targets := []Target{
-		{
-			Os:   "linux",
-			Arch: "amd64",
-			Out:  "prin",
-		},
-		{
-			Os:   "windows",
-			Arch: "amd64",
-			Out:  "prin.exe",
-		},
-	}
-	outputs := client.Directory()
 	golang := client.Container().From("golang:1.19-alpine3.15")
 	golang = golang.WithMountedDirectory("/src", src).WithWorkdir("/src")
-	golang = golang.WithEnvVariable("GO111MODULE", "on")
-	golang = golang.WithEnvVariable("GOPROXY", "https://goproxy.cn,direct")
-	golang = golang.WithEnvVariable("CGO_ENABLED", "0")
-	for _, target := range targets {
-		build := golang.WithEnvVariable("GOOS", target.Os)
-		build = build.WithEnvVariable("GOARCH", target.Arch)
-		path := fmt.Sprintf("dagger/backend/%s/", target.Os)
-		build = build.Exec(dagger.ContainerExecOpts{
-			Args: []string{"go", "build", "-o", path + target.Out, "cmd/main.go"},
-		})
-		outputs = outputs.WithDirectory(path, build.Directory(path))
+	for k, v := range envs {
+		golang = golang.WithEnvVariable(k, v)
 	}
+	path := "dagger/backend/"
+	golang = golang.Exec(dagger.ContainerExecOpts{
+		Args: []string{"go", "build", "-o", path + "prin", "cmd/main.go"},
+	})
 
-	if _, err := outputs.Export(ctx, "."); err != nil {
+	if _, err := golang.Directory(path).Export(ctx, path); err != nil {
 		return err
 	}
 

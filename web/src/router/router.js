@@ -5,7 +5,7 @@ const Time = () => import("../components/Time")
 const Coder = () => import("../components/Coder")
 const Cert = () => import("../components/Cert")
 const Iptables = () => import("../components/Iptables")
-const JsonToGo = () => import("../components/JsonToGo")
+// const JsonToGo = () => import("../components/JsonToGo")
 // const GoPlay = () => import("../components/GoPlay")
 const Zson = () => import("../components/Zson")
 
@@ -53,12 +53,12 @@ const mainRoutes = [
         title: "IPTables",
         component: Iptables
     },
-    {
-        path: "/jsontogo",
-        name: "jsontogo",
-        title: "JsonToGo",
-        component: JsonToGo
-    },
+    // {
+    //     path: "/jsontogo",
+    //     name: "jsontogo",
+    //     title: "JsonToGo",
+    //     component: JsonToGo
+    // },
     // 移除GoPlay，少且不稳定
     // {
     //     path: "/goplay",

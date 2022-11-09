@@ -2,12 +2,10 @@ package iptables
 
 import (
 	"bufio"
-	"context"
 	"errors"
 	"log"
 	"regexp"
 	"strings"
-	"time"
 )
 
 var (
@@ -288,13 +286,13 @@ func (p *Parser) parseRule(line string) (*Rule, error) {
 }
 
 func (p *Parser) Render(t string) ([]*OutChain, error) {
-	// 预防前端使用循环引用链，导致递归死循环，这里设置一个超时时间
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*3)
-
-	var formatChain func(string, string) (*OutChain, error)
-	formatChain = func(tableName string, chainName string) (out *OutChain, err error) {
-		if ctx.Err() != nil {
-			return nil, errors.New("处理超时")
+	// 预防前端使用循环引用链，导致递归死循环，这里设置一个最大深度
+	maxDepth := 10
+	var formatChain func(string, string, int) (*OutChain, error)
+	formatChain = func(tableName string, chainName string, depth int) (out *OutChain, err error) {
+		depth++
+		if depth > maxDepth {
+			return &OutChain{Name: "not shown for exceeding max depth"}, nil
 		}
 		out = &OutChain{Name: tableName + ":" + chainName, Rules: []*OutRule{}}
 		table, ok := p.tm[tableName]
@@ -333,7 +331,7 @@ func (p *Parser) Render(t string) ([]*OutChain, error) {
 			or.Matches = matches
 			or.Target = rr.Target.String()
 			if _, err := rr.Table.GetChain(rr.Target.Name); err == nil {
-				fc, err := formatChain(rr.Table.Name, rr.Target.Name)
+				fc, err := formatChain(rr.Table.Name, rr.Target.Name, depth)
 				if err != nil {
 					return nil, err
 				}
@@ -348,7 +346,7 @@ func (p *Parser) Render(t string) ([]*OutChain, error) {
 	for k, v := range conf {
 		segs := strings.Split(v, ":")
 		tableName, chainName := segs[0], segs[1]
-		fc, err := formatChain(tableName, chainName)
+		fc, err := formatChain(tableName, chainName, 0)
 		if err != nil {
 			return nil, err
 		}
