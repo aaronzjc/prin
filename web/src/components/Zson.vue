@@ -16,7 +16,7 @@
                         v-model:value="state.content"
                         lang="json"
                         @init="initEditor"
-                        theme="github"
+                        theme="tomorrow"
                         style="height: 600px" />
                 </div>
                 <div class="column is-narrow pl-0">
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                         <div class="control add" @click="add" v-if="state.pages.length < 9">
-                            <button class="button is-small is-warning">新建草稿</button>
+                            <button class="button is-small is-light">新建草稿</button>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
 import { reactive } from '@vue/runtime-core'
 import { VAceEditor } from 'vue3-ace-editor';
 import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-github';
+import 'ace-builds/src-noconflict/theme-tomorrow';
 
 export default {
     name: "Zson",
@@ -103,8 +103,8 @@ export default {
         function initEditor(editor) {
             state.editor = editor
             editor.setOption("showPrintMargin", false);
-            editor.setOption("fontSize", 13);
-            editor.setOption("fontFamily", '"dejavu sans mono", "droid sans mono", consolas, monaco, "lucida console", "courier new", courier, monospace, sans-serif');
+            editor.setOption("fontSize", 14);
+            editor.setOption("fontFamily", 'monaco, "droid sans mono", consolas, "lucida console", "courier new", courier, monospace, sans-serif');
             editor.setOption("wrap", true);
 
             add()
@@ -127,6 +127,11 @@ export default {
 div.json-editor > .ace_editor{
     border: 1px solid #dadada;
 }
+
+/* .ace_editor .ace_gutter {
+    background-color: #fff;
+    color: #333;
+} */
 
 #tag-tab .control {
     margin-right: 0.5rem;

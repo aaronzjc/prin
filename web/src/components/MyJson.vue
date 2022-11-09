@@ -305,7 +305,7 @@ export default {
  /* copy & modify from mozilla firefox devtools/client/shared/components/tree/TreeView.css */
 .output,
 .textarea {
-    font-family: "dejavu sans mono","droid sans mono",Menlo,monaco,"lucida console","courier new",courier,monospace,sans-serif;
+    font-family: PolySansMono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
     font-size: 12px;
     scrollbar-width: 2px;
 }
