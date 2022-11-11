@@ -29,7 +29,7 @@
     </router-view>
     <div class="columns" id="footer">
         <div class="column copyright has-text-centered">
-            <p><a href="https://github.com/aaronzjc">@aaronzjc</a>开发，源码<a href="https://github.com/aaronzjc/prin">在此</a>，欢迎Star v1.8</p>
+            <p><a href="https://github.com/aaronzjc">@aaronzjc</a>开发，源码<a href="https://github.com/aaronzjc/prin">在此</a>，欢迎Star v{{ version }}</p>
         </div>
     </div>
 </main>
@@ -45,9 +45,11 @@ export default {
         const state = reactive({
             tabs: readonly(mainRoutes)
         })
+        const version = readonly(process.env.VUE_APP_VERSION)
 
         return {
-            state
+            state,
+            version
         }
     }
 }

@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	AppVersion = "1.8"
+	AppVersion = "1.9"
 )
 
 func main() {
@@ -30,8 +30,8 @@ func main() {
 		fw.Step("frontend", buildFrontend)
 		fw.Step("image", buildAndPushImage)
 	case "deploy":
-		fw.Step("backend", buildBackend)
-		fw.Step("frontend", buildFrontend)
+		// fw.Step("backend", buildBackend)
+		// fw.Step("frontend", buildFrontend)
 		fw.Step("image", buildAndPushImage)
 		fw.Step("deploy", deploy)
 	default:
@@ -53,6 +53,7 @@ func buildFrontend(ctx context.Context) error {
 	})
 	npm := client.Container().From("node:14-alpine")
 	npm = npm.WithMountedDirectory("/src/web", src).WithWorkdir("/src/web")
+	npm = npm.WithEnvVariable("VERSION", AppVersion)
 	npm = npm.Exec(dagger.ContainerExecOpts{
 		Args: []string{"npm", "install", "--sass_binary_site=https://npm.taobao.org/mirrors/node-sass/"},
 	})
