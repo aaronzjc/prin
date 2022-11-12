@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"os"
 	"prin/pkg/flow"
+	"strings"
 
 	"dagger.io/dagger"
 )
 
 const (
-	AppVersion = "1.9"
+	Version = "1.10"
 )
 
 func main() {
@@ -53,7 +54,7 @@ func buildFrontend(ctx context.Context) error {
 	})
 	npm := client.Container().From("node:14-alpine")
 	npm = npm.WithMountedDirectory("/src/web", src).WithWorkdir("/src/web")
-	npm = npm.WithEnvVariable("VERSION", AppVersion)
+	npm = npm.WithEnvVariable("VERSION", Version)
 	npm = npm.Exec(dagger.ContainerExecOpts{
 		Args: []string{"npm", "install", "--sass_binary_site=https://npm.taobao.org/mirrors/node-sass/"},
 	})
@@ -115,7 +116,7 @@ func buildAndPushImage(ctx context.Context) error {
 	src := client.Host().Workdir()
 	docker := client.Container()
 	docker = docker.Build(src, dagger.ContainerBuildOpts{Dockerfile: "./scripts/Dockerfile"})
-	resp, err := docker.Publish(ctx, "aaronzjc/prin:"+AppVersion)
+	resp, err := docker.Publish(ctx, "aaronzjc/prin:"+Version)
 	if err != nil {
 		return err
 	}
@@ -131,11 +132,23 @@ func deploy(ctx context.Context) error {
 	}
 	defer client.Close()
 
-	kubeconfig := client.Host().Workdir().File("./scripts/kubeconf.yaml")
-	deployment := client.Host().Workdir().File("./scripts/k8s/Deployment.yaml")
+	// 处理版本
+	oldTag, newTag := "latest", Version
+	file := "./scripts/k8s/Deployment.yaml"
+	data, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	out := strings.ReplaceAll(string(data), oldTag, newTag)
+	os.WriteFile(file, []byte(out), 0666)
+	defer os.WriteFile(file, data, 0666)
+
 	kubectl := client.Container().From("bitnami/kubectl")
+	kubeconfig := client.Host().Workdir().File("./scripts/kubeconf.yaml")
 	kubectl = kubectl.WithMountedFile("/.kube/config", kubeconfig)
+	deployment := client.Host().Workdir().File(file)
 	kubectl = kubectl.WithMountedFile("/tmp/deployment.yaml", deployment)
+
 	kubectl = kubectl.Exec(dagger.ContainerExecOpts{
 		Args: []string{"apply", "-f", "/tmp/deployment.yaml", "-n", "k3s-apps"},
 	})
