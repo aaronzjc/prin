@@ -1,4 +1,4 @@
-package coder
+package handler
 
 import (
 	"encoding/base64"
@@ -11,13 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Form struct {
+type Coder struct{}
+
+type CoderForm struct {
 	Input string `json:"input"`
 	Type  string `json:"type"`
 }
 
-func Decode(c *gin.Context) {
-	var r Form
+func (ctr *Coder) Decode(c *gin.Context) {
+	var r CoderForm
 	var err error
 	if err = c.ShouldBindJSON(&r); err != nil {
 		req.JSON(c, req.CodeError, "参数异常", nil)
@@ -59,5 +61,4 @@ func Decode(c *gin.Context) {
 	req.JSON(c, req.CodeSuccess, "success", map[string]string{
 		"output": output,
 	})
-	return
 }

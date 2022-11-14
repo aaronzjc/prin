@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	Version = "1.11"
+	Version = "1.20"
 )
 
 func main() {
@@ -55,6 +55,9 @@ func buildFrontend(ctx context.Context) error {
 	npm := client.Container().From("node:14-alpine")
 	npm = npm.WithMountedDirectory("/src/web", src).WithWorkdir("/src/web")
 	npm = npm.WithEnvVariable("VERSION", Version)
+	npm = npm.Exec(dagger.ContainerExecOpts{
+		Args: []string{"npm", "config", "set", "registry", "https://registry.npmmirror.com"},
+	})
 	npm = npm.Exec(dagger.ContainerExecOpts{
 		Args: []string{"npm", "install", "--sass_binary_site=https://npm.taobao.org/mirrors/node-sass/"},
 	})
@@ -134,7 +137,7 @@ func deploy(ctx context.Context) error {
 
 	// 处理版本
 	oldTag, newTag := "latest", Version
-	file := "./scripts/k8s/Deployment.yaml"
+	file := "./scripts/k8s.yaml"
 	data, err := os.ReadFile(file)
 	if err != nil {
 		return err

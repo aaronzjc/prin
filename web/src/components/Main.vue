@@ -29,7 +29,12 @@
     </router-view>
     <div class="columns" id="footer">
         <div class="column copyright has-text-centered">
-            <p><a href="https://github.com/aaronzjc">@aaronzjc</a>开发，源码<a href="https://github.com/aaronzjc/prin">在此</a>，欢迎Star v{{ version }}</p>
+            <p>
+                <a href="https://github.com/aaronzjc">@aaronzjc</a>
+                开发，源码<a href="https://github.com/aaronzjc/prin">在此</a>，欢迎Star 
+                v{{ version }}. 
+                <span v-if="state.count != ''">当前在线 <strong class="online">{{ state.count }}</strong> 人</span>
+            </p>
         </div>
     </div>
 </main>
@@ -38,14 +43,24 @@
 <script>
 import { reactive, readonly } from 'vue'
 import { mainRoutes } from '../router/router'
+import {Get} from "../tools/http"
 
 export default {
     name: "Main",
     setup() {
         const state = reactive({
-            tabs: readonly(mainRoutes)
+            tabs: readonly(mainRoutes),
+            count: "",
         })
         const version = readonly(process.env.VUE_APP_VERSION)
+
+        async function GetOnline() {
+            let resp = await Get("/api/stat/online")
+            state.count = resp.data.data.count
+        }
+        
+        GetOnline() // 初始化
+        setInterval(GetOnline, 30 * 1000)
 
         return {
             state,
@@ -77,5 +92,8 @@ export default {
 #footer {
     margin-top: 100px;
     background: none;
+    .online {
+        color: #096;
+    }
 }
 </style>

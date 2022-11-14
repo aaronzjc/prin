@@ -1,7 +1,7 @@
-package cert
+package handler
 
 import (
-	"io/ioutil"
+	"os"
 	"prin/internal/app"
 	"prin/internal/util/logger"
 	"prin/internal/util/req"
@@ -11,12 +11,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Form struct {
+type Cert struct{}
+
+type CertForm struct {
 	Domains string `json:"domains"`
 }
 
-func Generate(c *gin.Context) {
-	var r Form
+func (ctr *Cert) Generate(c *gin.Context) {
+	var r CertForm
 	var err error
 	if err = c.ShouldBindJSON(&r); err != nil {
 		req.JSON(c, req.CodeError, "参数异常", nil)
@@ -30,8 +32,8 @@ func Generate(c *gin.Context) {
 
 	domains := strings.Split(r.Domains, ",")
 
-	caCertData, _ := ioutil.ReadFile(app.RootPath + "/assets/ca.pem")
-	caKeyData, _ := ioutil.ReadFile(app.RootPath + "/assets/ca.key")
+	caCertData, _ := os.ReadFile(app.RootPath + "/assets/ca.pem")
+	caKeyData, _ := os.ReadFile(app.RootPath + "/assets/ca.key")
 	caCerts, err := tool.ParseCertsPEM(caCertData)
 	if err != nil {
 		req.JSON(c, req.CodeError, err.Error(), nil)
@@ -58,5 +60,4 @@ func Generate(c *gin.Context) {
 		"cert": string(dstCert),
 		"key":  string(dstKey),
 	})
-	return
 }

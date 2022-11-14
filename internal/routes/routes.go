@@ -2,10 +2,8 @@ package routes
 
 import (
 	"prin/internal/app"
-	"prin/internal/routes/cert"
-	"prin/internal/routes/coder"
-	"prin/internal/routes/iptables"
-	"prin/internal/routes/qrcode"
+	"prin/internal/routes/handler"
+	"prin/internal/routes/middleware"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -49,10 +47,28 @@ func RegisterRoutes() {
 	// 前端路由
 	api := r.Group("/api")
 	{
+		// 二维码
+		qrcode := &handler.Qrcode{}
 		api.POST("/qrcode", qrcode.Generate)
+
+		// 编解码
+		coder := &handler.Coder{}
 		api.POST("/coder", coder.Decode)
+
+		// 证书
+		cert := &handler.Cert{}
 		api.POST("/cert", cert.Generate)
+
+		// iptables
+		iptables := &handler.Iptables{}
 		api.POST("/iptables", iptables.Beauty)
+
+		// 统计
+		statGroup := api.Group("/stat").Use(middleware.SetOnline())
+		{
+			stat := &handler.Stat{}
+			statGroup.GET("/online", stat.Online)
+		}
 	}
 
 	RegisterStatic()

@@ -13,7 +13,7 @@ const baseRoutes = [
     {
         path: "/",
         name: "default",
-        redirect: "json",
+        redirect: "qrcode",
     }
 ];
 const mainRoutes = [

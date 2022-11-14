@@ -1,19 +1,22 @@
-package qrcode
+package handler
 
 import (
 	"encoding/base64"
-	"github.com/gin-gonic/gin"
-	qr "github.com/skip2/go-qrcode"
 	"prin/internal/util/logger"
 	"prin/internal/util/req"
+
+	"github.com/gin-gonic/gin"
+	qr "github.com/skip2/go-qrcode"
 )
 
-type Form struct {
+type Qrcode struct{}
+
+type QrcodeForm struct {
 	Content string `json:"content"`
 }
 
-func Generate(c *gin.Context) {
-	var r Form
+func (ctr *Qrcode) Generate(c *gin.Context) {
+	var r QrcodeForm
 	var err error
 	if err = c.ShouldBindJSON(&r); err != nil {
 		req.JSON(c, req.CodeError, "参数异常", nil)
@@ -35,5 +38,4 @@ func Generate(c *gin.Context) {
 	req.JSON(c, req.CodeSuccess, "success", map[string]string{
 		"qrcode": data,
 	})
-	return
 }

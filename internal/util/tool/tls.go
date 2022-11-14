@@ -61,7 +61,7 @@ func ParsePrivKey(keyData []byte) (*rsa.PrivateKey, error) {
 
 func GenCertAndPrivkey(caPrivKey *rsa.PrivateKey, caCert *x509.Certificate, domains []string) (privKey []byte, cert []byte, err error) {
 	// 签证书
-	r, err := rand.Int(rand.Reader, big.NewInt(2020))
+	r, _ := rand.Int(rand.Reader, big.NewInt(2020))
 	certTpl := &x509.Certificate{
 		SerialNumber: big.NewInt(r.Int64()),
 		Subject: pkix.Name{

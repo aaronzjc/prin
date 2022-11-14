@@ -1,4 +1,4 @@
-package iptables
+package handler
 
 import (
 	"bufio"
@@ -9,13 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Form struct {
+type Iptables struct{}
+
+type IptablesForm struct {
 	T    string `json:"type"`
 	Data string `json:"data"`
 }
 
-func Beauty(c *gin.Context) {
-	var r Form
+func (ctr *Iptables) Beauty(c *gin.Context) {
+	var r IptablesForm
 	var err error
 	if err = c.ShouldBindJSON(&r); err != nil {
 		req.JSON(c, req.CodeError, "参数异常", nil)
@@ -35,5 +37,4 @@ func Beauty(c *gin.Context) {
 	}
 
 	req.JSON(c, req.CodeSuccess, "success", result)
-	return
 }

@@ -24,6 +24,9 @@ spec:
       - name: prin
         image: aaronzjc/prin:latest
         imagePullPolicy: Always
+        env:
+        - name: ONLINE_SVC
+          value: http://online-stat-svc
         volumeMounts:
         - name: prin-log-dir
           mountPath: /var/log
