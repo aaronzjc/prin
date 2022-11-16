@@ -34,7 +34,7 @@ func RegisterStatic() {
 
 func RegisterRoutes() {
 	r := app.App.Gin
-	r.Use(gin.Recovery())
+	r.Use(gin.Recovery(), gin.Logger())
 
 	c := cors.New(cors.Config{
 		AllowOriginFunc:  func(origin string) bool { return true },

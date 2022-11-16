@@ -92,8 +92,5 @@ export default {
 #footer {
     margin-top: 100px;
     background: none;
-    .online {
-        color: #096;
-    }
 }
 </style>
