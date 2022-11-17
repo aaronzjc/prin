@@ -53,14 +53,19 @@ export default {
             count: "",
         })
         const version = readonly(process.env.VUE_APP_VERSION)
-
+        let ticker = false
         async function GetOnline() {
             let resp = await Get("/api/stat/online")
-            state.count = resp.data.data.count
+            if (resp.data.code === 10000) {
+                state.count = resp.data.data.count
+                ticker = true
+            }
         }
         
         GetOnline() // 初始化
-        setInterval(GetOnline, 30 * 1000)
+        if (ticker) {
+            setInterval(GetOnline, 30 * 1000)
+        }
 
         return {
             state,

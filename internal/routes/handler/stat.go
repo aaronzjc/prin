@@ -15,9 +15,7 @@ type Stat struct{}
 func (ctr *Stat) Online(c *gin.Context) {
 	svc := os.Getenv("ONLINE_SVC")
 	if svc == "" {
-		req.JSON(c, req.CodeSuccess, "success", map[string]string{
-			"count": "",
-		})
+		req.JSON(c, req.CodeError, "no online svc", nil)
 		return
 	}
 	url := fmt.Sprintf("%s/online/%s", svc, "prin")
