@@ -6,32 +6,32 @@ import (
 	"strings"
 )
 
+const (
+	space = " "
+)
+
 type Scanner struct {
 	r *bufio.Reader
 }
 
 func (s *Scanner) ReadWord() (string, error) {
 	word, err := s.r.ReadString(' ')
-	if err != nil {
-		if err.Error() == "EOF" {
-			return strings.TrimRight(word, " "), nil
-		}
+	if err != nil && err == io.EOF {
+		err = nil
 	}
-	return strings.TrimRight(word, " "), err
+	return strings.TrimRight(word, space), err
 }
 
 func (s *Scanner) Peek(n int) (string, error) {
 	bs, err := s.r.Peek(n)
-	if err != nil {
-		if err.Error() == "EOF" {
-			return string(bs), nil
-		}
+	if err != nil && err == io.EOF {
+		err = nil
 	}
 	return string(bs), err
 }
 
 func (s *Scanner) ReadLine() (string, error) {
-	str, _, err := s.r.ReadLine()
+	str, _, err := s.r.ReadLine() // 忽略缓存不足的情况
 	return string(str), err
 }
 
