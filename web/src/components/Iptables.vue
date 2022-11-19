@@ -131,8 +131,8 @@ textarea {
     text-decoration-style: wavy;
     cursor: pointer;
 }
-.rule-match span.text-orange {
-    border: 1px solid #F59E0B;
+.rule-match span.text-red {
+    border: 1px solid #EF4444;
     border-radius: 0.25rem;
     margin: 0 0.25rem;
     padding: 1px 4px;

@@ -6,7 +6,7 @@
             <p class="rule-text text-black">{{ rule.text }}</p>
             <p class="rule-match" v-if="rule.matches.length > 0">
                 <span class="text-gray">Matches: </span>
-                <span class="text-orange" v-for="(match, ii) in rule.matches" :key="ii">{{ match }}</span>
+                <span class="text-red" v-for="(match, ii) in rule.matches" :key="ii">{{ match }}</span>
             </p>
             <p v-if="rule.chain" @click="toggle(idx)" class="rule-target">
                 <span class="text-gray">Target: </span>
